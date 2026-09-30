@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gexa</title>
+<style>
+:root{--u:calc(min(100vw,520px)/560);--bg:#000000;--box:#16181c;--chip:#202327;--text:#e7e9ea;--sub:#a7abaf;--ph:#71767b;--pill:#eff3f4;--blue:#eff3f4}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;background:var(--bg)}
+body{color:var(--text);font-family:"Google Sans","Product Sans","Figtree",Roboto,system-ui,sans-serif;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer}
+button:focus-visible,textarea:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+svg{display:block}
+.app{height:100%;width:min(100vw,520px);margin:0 auto;display:flex;flex-direction:column}
+header{height:calc(80*var(--u));display:flex;align-items:center;justify-content:space-between;padding:0 calc(20*var(--u)) 0 calc(21*var(--u));flex:none}
+.hb{width:calc(44*var(--u));height:calc(44*var(--u));display:grid;place-items:center}
+header h1{font-size:calc(24*var(--u));font-weight:500;letter-spacing:calc(-.2*var(--u))}
+main{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;padding:0 calc(19*var(--u))}
+.hero{margin:auto;text-align:center;display:flex;flex-direction:column;align-items:center}
+.hero h2{margin-top:calc(18*var(--u));font-size:calc(51*var(--u));line-height:1;font-weight:500;letter-spacing:calc(-.6*var(--u))}
+.hero p{margin-top:calc(17*var(--u));font-size:calc(21.5*var(--u));line-height:calc(28*var(--u));font-weight:400;color:var(--sub)}
+.msgs{display:flex;flex-direction:column;gap:calc(16*var(--u));padding:calc(8*var(--u)) 0}
+.m{max-width:85%;padding:calc(14*var(--u)) calc(20*var(--u));border-radius:calc(28*var(--u));font-size:calc(22*var(--u));line-height:1.45}
+.me{align-self:flex-end;background:var(--chip);white-space:pre-wrap;overflow-wrap:anywhere}
+.ai{align-self:flex-start}
+.box{flex:none;border:1px solid #2f3336;margin:0 calc(19*var(--u)) calc(25*var(--u));background:var(--box);border-radius:calc(42*var(--u));padding:calc(28*var(--u)) calc(10*var(--u)) calc(11*var(--u)) calc(12*var(--u))}
+textarea{display:block;width:100%;height:calc(30*var(--u));max-height:calc(120*var(--u));resize:none;border:0;background:none;color:var(--text);font:inherit;font-size:calc(21*var(--u));line-height:calc(30*var(--u));padding:0 calc(16*var(--u));caret-color:var(--text)}
+textarea::placeholder{color:var(--ph)}
+textarea:focus{outline:none}
+.row{margin-top:calc(36*var(--u));display:flex;align-items:center;gap:calc(11*var(--u))}
+.circ{width:calc(58*var(--u));height:calc(58*var(--u));border-radius:50%;background:var(--chip);display:grid;place-items:center;flex:none}
+.circ.mic{width:calc(56*var(--u));height:calc(56*var(--u))}
+.model{height:calc(54*var(--u));border-radius:calc(27*var(--u));background:var(--chip);display:flex;align-items:center;padding:0 calc(24*var(--u)) 0 calc(22*var(--u));gap:calc(10*var(--u));font-size:calc(20.5*var(--u));font-weight:500;white-space:nowrap;flex:none}
+.sp{flex:1}
+.model svg{flex:none}
+.speak{height:calc(56*var(--u));width:calc(127*var(--u));border-radius:calc(28*var(--u));background:var(--pill);color:#111;display:flex;align-items:center;justify-content:center;gap:calc(10*var(--u));font-size:calc(20.5*var(--u));font-weight:500;flex:none}
+.send{display:none;width:calc(56*var(--u));height:calc(56*var(--u));border-radius:50%;background:#eff3f4;place-items:center;flex:none}
+.typing .send{display:grid}
+.typing .speak{display:none}
+
+.app{position:relative;overflow:hidden}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.32);opacity:0;pointer-events:none;transition:opacity .25s;z-index:9}
+.drawer{position:absolute;top:0;bottom:0;left:0;width:calc(408*var(--u));background:#000000;z-index:10;display:flex;flex-direction:column;transform:translateX(-102%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
+.open .scrim{opacity:1;pointer-events:auto}
+.open .drawer{transform:none;visibility:visible;transition:transform .25s ease,visibility 0s}
+.dh{height:calc(78*var(--u));display:flex;align-items:center;padding-left:calc(24*var(--u));font-size:calc(27.5*var(--u));font-weight:500;flex:none}
+.search{margin:calc(6*var(--u)) calc(20*var(--u)) 0 calc(21*var(--u));height:calc(65*var(--u));border-radius:calc(33*var(--u));background:#16181c;border:1px solid #2f3336;display:flex;align-items:center;padding:0 calc(16*var(--u)) 0 calc(20*var(--u));gap:calc(17*var(--u));flex:none}
+.search input{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:calc(21*var(--u))}
+.search input::placeholder{color:#71767b}
+.search input:focus{outline:none}
+.nc{margin:calc(17*var(--u)) calc(14*var(--u)) 0 calc(15*var(--u));height:calc(81*var(--u));border-radius:calc(41*var(--u));background:#202327;display:flex;align-items:center;padding-left:calc(23*var(--u));gap:calc(27*var(--u));font-size:calc(22*var(--u));font-weight:500;flex:none}
+.list{flex:1;min-height:0;overflow-y:auto}
+.lab{margin-top:calc(27*var(--u));margin-bottom:calc(7.5*var(--u));padding-left:calc(24*var(--u));font-size:calc(19.5*var(--u));line-height:calc(28*var(--u));color:#71767b}
+.it{height:calc(71*var(--u));display:flex;align-items:center;padding:0 calc(27*var(--u)) 0 calc(29*var(--u))}
+.ti{flex:1;min-width:0;height:100%;display:flex;align-items:center;gap:calc(26*var(--u));font-size:calc(21.5*var(--u));text-align:left}
+.ti span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kb{width:calc(24*var(--u));height:calc(44*var(--u));display:grid;place-items:center}
+.ft{border-top:1px solid #2f3336;padding:calc(18*var(--u)) 0 calc(16*var(--u));flex:none}
+.fr{height:calc(76*var(--u));width:100%;display:flex;align-items:center;padding:0 calc(27*var(--u)) 0 calc(29*var(--u));gap:calc(26*var(--u));font-size:calc(21.5*var(--u));font-weight:500;text-align:left}
+.fr span{flex:1}
+.hidden{display:none!important}
+
+.sett{position:absolute;inset:0;background:#000000;z-index:20;overflow-y:auto;transform:translateX(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
+.sopen .sett{transform:none;visibility:visible;transition:transform .25s ease,visibility 0s}
+.sh{height:calc(80*var(--u));display:flex;align-items:center;padding-left:calc(19*var(--u));gap:calc(41*var(--u))}
+.sh h1{font-size:calc(25*var(--u));font-weight:500}
+.sl{margin:calc(15*var(--u)) 0 calc(6*var(--u)) calc(19*var(--u));font-size:calc(24*var(--u));line-height:calc(30*var(--u));color:#a7abaf}
+.sg+.sl{margin-top:calc(27*var(--u))}
+.sg{margin:0 calc(17*var(--u));background:#16181c;border:1px solid #2f3336;border-radius:calc(34*var(--u));overflow:hidden}
+.sr{position:relative;min-height:calc(89*var(--u));display:flex;align-items:center;width:100%;padding:0 calc(22*var(--u)) 0 calc(27*var(--u));gap:calc(28*var(--u));text-align:left}
+.sr+.sr::before{content:"";position:absolute;top:0;left:calc(24*var(--u));right:calc(24*var(--u));border-top:1px solid #2a2d31}
+.tx{flex:1;min-width:0;padding:calc(16*var(--u)) 0}
+.tx b{display:block;font-size:calc(22*var(--u));line-height:calc(30*var(--u));font-weight:500}
+.tx small{display:block;margin-top:calc(3*var(--u));font-size:calc(17*var(--u));line-height:calc(22*var(--u));color:#71767b;white-space:nowrap}
+.sw{width:calc(58*var(--u));height:calc(36*var(--u));border-radius:calc(18*var(--u));background:#3a3f44;position:relative;flex:none;margin-right:calc(-3*var(--u))}
+.sw::after{content:"";position:absolute;top:calc(4*var(--u));left:calc(4*var(--u));width:calc(28*var(--u));height:calc(28*var(--u));border-radius:50%;background:#e7e9ea;transition:transform .2s}
+.sw.on{background:#eff3f4}
+.sw.on::after{transform:translateX(calc(22*var(--u)));background:#fff}
+
+.login{position:absolute;inset:0;background:#000000;z-index:30;overflow-y:auto;transform:translateY(100%);visibility:hidden;transition:transform .25s ease,visibility 0s .25s}
+.lopen .login{transform:none;visibility:visible;transition:transform .25s ease,visibility 0s}
+.lh{height:calc(80*var(--u));display:flex;align-items:center;padding-left:calc(24*var(--u))}
+.lb{padding:calc(99*var(--u)) calc(33*var(--u)) calc(60*var(--u));display:flex;flex-direction:column}
+.lgo{display:flex;justify-content:center}
+.lb h2{text-align:center;margin-top:calc(6*var(--u));font-size:calc(46*var(--u));line-height:1;font-weight:500;letter-spacing:calc(-.5*var(--u))}
+.lb .st{text-align:center;margin-top:calc(10*var(--u));font-size:calc(22*var(--u));line-height:calc(30*var(--u));color:var(--sub)}
+.fld{height:calc(76*var(--u));border-radius:calc(22*var(--u));background:#16181c;border:1px solid #2f3336;display:flex;align-items:center;padding:0 calc(24*var(--u)) 0 calc(25*var(--u));gap:calc(24*var(--u))}
+.fld:focus-within{border-color:#eff3f4}
+.fld input{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:calc(21*var(--u))}
+.fld input::placeholder{color:#71767b}
+.fld input:focus{outline:none}
+.fg{align-self:flex-end;margin-top:calc(23*var(--u));font-size:calc(20.5*var(--u));line-height:calc(30*var(--u));font-weight:500;color:#eff3f4}
+.go{margin-top:calc(48*var(--u));height:calc(68*var(--u));border-radius:calc(34*var(--u));background:#eff3f4;color:#fff;font-size:calc(21*var(--u));font-weight:500}
+.gg{margin-top:calc(24*var(--u));height:calc(68*var(--u));border-radius:calc(34*var(--u));border:1px solid #536471;display:flex;align-items:center;justify-content:center;gap:calc(22*var(--u));font-size:calc(21*var(--u));font-weight:500}
+.rg{margin-top:calc(43*var(--u));text-align:center;font-size:calc(21*var(--u));line-height:calc(30*var(--u));color:var(--sub)}
+.rg button{color:#eff3f4;font-weight:500}
+
+.voice{position:absolute;inset:0;background:#000000;z-index:40;display:flex;flex-direction:column;opacity:0;visibility:hidden;transition:opacity .25s,visibility 0s .25s}
+.vopen .voice{opacity:1;visibility:visible;transition:opacity .25s,visibility 0s}
+.vh{height:calc(110*var(--u));display:flex;align-items:center;padding-left:calc(23*var(--u));flex:none}
+.orbw{position:relative;width:calc(454*var(--u));height:calc(454*var(--u));margin:calc(63*var(--u)) auto 0;flex:none;display:grid;place-items:center;transition:opacity .3s}
+.r1,.r2,.b{position:absolute;border-radius:50%}
+.r1{inset:0;background:#0a0a0a;animation:pulse 5s ease-in-out infinite alternate}
+.r2{width:90.3%;height:90.3%;background:#101010;animation:pulse 5s ease-in-out -2.5s infinite alternate}
+.b{width:calc(360*var(--u));height:calc(360*var(--u));opacity:.8;background:radial-gradient(closest-side,#000000 0,#000000 48%,rgba(50,50,50,.5) 76%,rgba(120,120,120,.7) 93%,rgba(235,235,235,.95) 99%,rgba(235,235,235,0) 100%)}
+.b1{border-radius:41% 59% 52% 48%/58% 42% 58% 42%;animation:m1 7s ease-in-out infinite alternate,spin 22s linear infinite}
+.b2{border-radius:56% 44% 39% 61%/43% 55% 45% 57%;animation:m2 9s ease-in-out infinite alternate,spin 30s linear infinite reverse}
+.b3{border-radius:48% 52% 60% 40%/52% 47% 53% 48%;animation:m3 11s ease-in-out infinite alternate,spin 38s linear infinite}
+@keyframes m1{to{border-radius:58% 42% 45% 55%/45% 58% 42% 55%}}
+@keyframes m2{to{border-radius:42% 58% 57% 43%/57% 45% 55% 43%}}
+@keyframes m3{to{border-radius:55% 45% 42% 58%/44% 56% 44% 56%}}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes pulse{to{transform:scale(1.03)}}
+@keyframes bar{0%,100%{transform:scaleY(.72)}50%{transform:scaleY(1)}}
+.vg{position:absolute;top:calc(163*var(--u));left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:calc(240*var(--u))}
+.bars{height:calc(72*var(--u));display:flex;align-items:center;gap:calc(10*var(--u))}
+.bars i{display:block;width:calc(9*var(--u));border-radius:calc(5*var(--u));background:#eff3f4;animation:bar 1s ease-in-out infinite}
+.bars i:nth-child(1),.bars i:nth-child(5){height:calc(24*var(--u))}
+.bars i:nth-child(2),.bars i:nth-child(4){height:calc(44*var(--u));animation-delay:-.3s}
+.bars i:nth-child(3){height:calc(72*var(--u));animation-delay:-.6s}
+.bars i:nth-child(4){animation-delay:-.45s}.bars i:nth-child(5){animation-delay:-.15s}
+.vs{margin-top:calc(19*var(--u));text-align:center;font-size:calc(21.5*var(--u));line-height:calc(32*var(--u));font-weight:600}
+.tr{margin-top:calc(70*var(--u));padding:0 calc(30*var(--u));text-align:center;font-size:calc(30*var(--u));line-height:calc(40*var(--u));min-height:calc(80*var(--u))}
+.tr span{opacity:0;transition:opacity .35s}
+.tr span.on{opacity:1}
+.vc{margin-top:auto;display:flex;justify-content:space-between;padding:0 calc(66*var(--u)) calc(74*var(--u))}
+.vb{display:flex;flex-direction:column;align-items:center;gap:calc(8*var(--u));font-size:calc(19*var(--u));color:#e7e9ea}
+.vb i{width:calc(98*var(--u));height:calc(98*var(--u));border-radius:50%;background:#202327;display:grid;place-items:center}
+.vb.red i{background:#ee3b32}
+.vmuted .orbw{opacity:.45}
+.vmuted .b,.vmuted .r1,.vmuted .r2,.vmuted .bars i{animation-play-state:paused}
+@media (prefers-reduced-motion:reduce){.b,.r1,.r2,.bars i{animation:none!important}}
+.blob{position:absolute;width:calc(400*var(--u));height:calc(400*var(--u));overflow:visible}
+.blob path{fill:url(#bgr);opacity:.8}
+
+/* Tombol + jadi × dan sheet "Tambahkan ke chat" */
+.box{transition:margin-bottom .32s cubic-bezier(.32,.72,0,1)}
+.popen .box{margin-bottom:calc(14*var(--u))}
+#plus svg{transition:transform .32s cubic-bezier(.32,.72,0,1)}
+.popen #plus svg{transform:rotate(45deg)}
+.pwrap{flex:none;height:0;overflow:hidden;visibility:hidden;transition:height .32s cubic-bezier(.32,.72,0,1),visibility 0s .32s}
+.popen .pwrap{visibility:visible;transition:height .32s cubic-bezier(.32,.72,0,1),visibility 0s}
+.psheet{background:#000000;border:1px solid #2f3336;border-bottom:0;border-radius:calc(46*var(--u)) calc(46*var(--u)) 0 0;padding:calc(12*var(--u)) calc(19*var(--u)) calc(22*var(--u));max-height:72vh;overflow-y:auto}
+.phandle{width:calc(56*var(--u));height:calc(8*var(--u));border-radius:calc(4*var(--u));background:#2f3336;margin:0 auto}
+.phead{position:relative;height:calc(88*var(--u));margin-top:calc(7*var(--u));display:flex;align-items:center;justify-content:center;font-size:calc(25.5*var(--u));font-weight:600}
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:calc(12*var(--u));margin-top:calc(17*var(--u))}
+.pcard{height:calc(162*var(--u));border-radius:calc(26*var(--u));background:#202327;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(12*var(--u));font-size:calc(23*var(--u));font-weight:500}
+.pic{width:calc(68*var(--u));height:calc(68*var(--u));border-radius:50%;background:#2f3336;display:grid;place-items:center;flex:none}
+.prow{width:100%;height:calc(98*var(--u));margin-top:calc(18*var(--u));border-radius:calc(26*var(--u));background:#202327;display:flex;align-items:center;gap:calc(15*var(--u));padding:0 calc(22*var(--u)) 0 calc(18*var(--u));text-align:left}
+.prow .pic{width:calc(62*var(--u));height:calc(62*var(--u))}
+.prow .tx{padding:0}
+.prow .tx b{font-size:calc(26*var(--u));line-height:calc(32*var(--u))}
+.prow .tx small{font-size:calc(22*var(--u));line-height:calc(28*var(--u));margin-top:0;color:#71767b}
+
+/* Sheet "Model Gexa" */
+.mscrim{position:absolute;inset:0;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .3s;z-index:7}
+.mopen .mscrim{opacity:1;pointer-events:auto}
+.msheet{position:absolute;left:0;right:0;bottom:0;height:68%;background:#000000;border-radius:calc(46*var(--u)) calc(46*var(--u)) 0 0;z-index:8;display:flex;flex-direction:column;transform:translateY(100%);visibility:hidden;transition:transform .32s cubic-bezier(.32,.72,0,1),visibility 0s .32s}
+.mopen .msheet{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.32,.72,0,1),visibility 0s}
+.mhead{position:relative;height:calc(132*var(--u));flex:none;display:flex;align-items:center;justify-content:center;font-size:calc(25.5*var(--u));font-weight:600}
+.mhead .hb{position:absolute;left:calc(17*var(--u))}
+.mlist{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:calc(3*var(--u));padding:0 calc(19*var(--u)) calc(22*var(--u))}
+.mrow{flex:none;height:calc(87*var(--u));display:flex;align-items:center;gap:calc(14*var(--u));padding:0 calc(19*var(--u));background:#202327;border-radius:calc(6*var(--u));font-size:calc(28*var(--u));font-weight:500;text-align:left}
+.mrow:first-child{border-radius:calc(26*var(--u)) calc(26*var(--u)) calc(6*var(--u)) calc(6*var(--u))}
+.mrow:last-child{border-radius:calc(6*var(--u)) calc(6*var(--u)) calc(26*var(--u)) calc(26*var(--u))}
+.mrow:active{background:#2a2d31}
+.mbadge{font-style:normal;font-size:calc(17*var(--u));font-weight:600;line-height:calc(19*var(--u));color:#eff3f4;background:#202327;border-radius:calc(16*var(--u));padding:calc(6*var(--u)) calc(12*var(--u))}
+
+/* Sheet "Pilih model" (tampilan pertama saat tombol Model ditekan) */
+.qopen .mscrim{opacity:1;pointer-events:auto}
+.qsheet{position:absolute;left:0;right:0;bottom:0;max-height:68%;background:#000000;border-radius:calc(46*var(--u)) calc(46*var(--u)) 0 0;z-index:8;display:flex;flex-direction:column;transform:translateY(100%);visibility:hidden;transition:transform .32s cubic-bezier(.32,.72,0,1),visibility 0s .32s}
+.qopen .qsheet{transform:none;visibility:visible;transition:transform .32s cubic-bezier(.32,.72,0,1),visibility 0s}
+.qbody{flex:1;min-height:0;overflow-y:auto;padding:0 calc(19*var(--u)) calc(22*var(--u))}
+.qgrp{display:flex;flex-direction:column;gap:calc(3*var(--u))}
+.qgrp:empty{display:none}
+.qgrp:empty+.prow{margin-top:0}
+.qgrp+.prow{margin-top:calc(20*var(--u))}
+.qrow{display:flex;align-items:center;gap:calc(14*var(--u));padding:calc(15*var(--u)) calc(22*var(--u)) calc(15*var(--u)) calc(19*var(--u));background:#202327;border-radius:calc(6*var(--u));text-align:left}
+.qrow:first-child{border-radius:calc(26*var(--u)) calc(26*var(--u)) calc(6*var(--u)) calc(6*var(--u))}
+.qrow:last-child{border-radius:calc(6*var(--u)) calc(6*var(--u)) calc(26*var(--u)) calc(26*var(--u))}
+.qrow:only-child{border-radius:calc(26*var(--u))}
+.qrow:active{background:#2a2d31}
+.qt{flex:1;min-width:0}
+.qn{display:flex;align-items:center;gap:calc(12*var(--u));font-size:calc(26.5*var(--u));line-height:calc(34*var(--u));font-weight:500}
+.qd{display:block;margin-top:calc(2*var(--u));font-size:calc(22.5*var(--u));line-height:calc(32*var(--u));color:#71767b}
+.qsel .qn,.qsel .qd{color:var(--blue)}
+.prow .tx small.qb{color:var(--blue)}
+
+/* Balasan AI */
+.box{position:relative}
+.tst{position:absolute;left:calc(12*var(--u));right:calc(10*var(--u));top:calc(24*var(--u));height:calc(38*var(--u));display:none;align-items:center;gap:calc(14*var(--u));padding-left:calc(16*var(--u));background:var(--box);border-radius:calc(19*var(--u));font-size:calc(21*var(--u));color:#a7abaf}
+.tst.on{display:flex}
+.tst svg{width:calc(26*var(--u));height:calc(26*var(--u));flex:none}
+.stop{display:none;height:calc(56*var(--u));width:calc(56*var(--u));border-radius:50%;background:var(--pill);color:#111;align-items:center;justify-content:center;flex:none}
+.stop i{width:calc(17*var(--u));height:calc(17*var(--u));border-radius:calc(3*var(--u));background:#111}
+.busy .stop{display:flex}
+.busy .speak,.busy .send{display:none!important}
+.am{display:flex;flex-direction:column;gap:calc(14*var(--u))}
+.ar{display:flex;gap:calc(14*var(--u));align-items:flex-start;font-size:calc(22*var(--u));line-height:1.45}
+.ar>svg{flex:none;width:calc(46*var(--u));height:calc(37*var(--u));margin-top:calc(-3*var(--u))}
+.at{flex:1;min-width:0}
+.at p+p,.at p+ol,.at ol+p{margin-top:calc(18*var(--u))}
+.at ol{padding-left:calc(26*var(--u))}
+.at b{font-weight:600}
+.ac{display:flex;align-items:center;gap:calc(34*var(--u));padding-left:calc(60*var(--u))}
+.ac button{display:flex;align-items:center;gap:calc(9*var(--u));height:calc(44*var(--u));font-size:calc(17.5*var(--u));color:#71767b}
+.ac svg{width:calc(24*var(--u));height:calc(24*var(--u));fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.ac .on{color:var(--blue)}
+.ac .on svg{fill:currentColor}
+.ac:not(.ic) .x{display:none}
+.ac.ic{gap:0;padding-left:0}
+.ac.ic button{order:4;width:calc(46*var(--u));justify-content:center}
+.ac.ic span{display:none}
+.ac.ic [data-a=up]{order:1}.ac.ic [data-a=dn]{order:2}.ac.ic [data-a=cp]{order:3}
+.gen .ac{display:none}
+.cc{border:1px solid #2f3336;background:#16181c;border-radius:calc(26*var(--u));overflow:hidden}
+.ch{display:flex;align-items:center;justify-content:space-between;padding:calc(12*var(--u)) calc(12*var(--u)) calc(6*var(--u)) calc(19*var(--u));font-size:calc(19*var(--u));color:#71767b}
+.ch div{display:flex;gap:calc(10*var(--u))}
+.ch button{display:flex;align-items:center;gap:calc(8*var(--u));height:calc(38*var(--u));padding:0 calc(16*var(--u));border-radius:calc(19*var(--u));background:#2f3336;color:#e7e9ea;font-size:calc(18*var(--u))}
+.ch svg{width:calc(20*var(--u));height:calc(20*var(--u));fill:none;stroke:currentColor;stroke-width:1.8;stroke-linejoin:round;stroke-linecap:round}
+.cc pre{padding:calc(6*var(--u)) calc(19*var(--u)) calc(20*var(--u));overflow-x:auto;font:calc(14*var(--u))/calc(21*var(--u)) ui-monospace,Menlo,Consolas,monospace;color:#e7e9ea;tab-size:2}
+.cc i{font-style:normal}
+.k1{color:#6cb6ff}.k2{color:#ffab70}.k4{color:#7d8590}
+.gc{position:relative;aspect-ratio:1;border-radius:calc(34*var(--u));overflow:hidden;background:#000000;border:1px solid #2f3336}
+.gc>i{position:absolute;inset:-10%;background:radial-gradient(circle at 78% 22%,#8b8f94 0 9%,transparent 10%),radial-gradient(ellipse at 50% 108%,#55595d 0 34%,transparent 35%),linear-gradient(#000000,#2f3336 62%,#3a3d40);filter:blur(calc(28*var(--u)))}
+.gp{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,0,0,.3);text-align:center}
+.done .gp{display:none}
+.gr{position:relative;width:calc(176*var(--u));height:calc(176*var(--u));display:grid;place-items:center;font-size:calc(32*var(--u));font-weight:600}
+.gr svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg);fill:none;stroke-width:7}
+.gr circle:first-child{stroke:rgba(255,255,255,.2)}
+.gr circle:last-child{stroke:#eff3f4;stroke-linecap:round;stroke-dasharray:276.46;stroke-dashoffset:276.46}
+.gp b{margin-top:calc(22*var(--u));font-size:calc(22*var(--u));font-weight:600}
+.gp small{margin-top:calc(8*var(--u));font-size:calc(19*var(--u));color:#a7abaf}
+.prev{position:absolute;inset:0;z-index:50;display:none;flex-direction:column;background:#fff}
+.prev.on{display:flex}
+.prev div{height:calc(80*var(--u));flex:none;display:flex;align-items:center;gap:calc(20*var(--u));padding-left:calc(19*var(--u));background:var(--bg);font-size:calc(24*var(--u));font-weight:500}
+.prev iframe{flex:1;border:0;background:#fff}
+
+/* Balasan AI: tambahan */
+.ex{display:flex;flex-direction:column;gap:calc(14*var(--u))}
+.ex:empty{display:none}
+.at ul{padding-left:calc(26*var(--u))}
+.at p+ul,.at ul+p{margin-top:calc(18*var(--u))}
+.at code{font:.9em ui-monospace,Menlo,Consolas,monospace;background:#2f3336;border-radius:6px;padding:1px 6px}
+.gc.done>i{filter:none;inset:0}
+.gc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.av{width:calc(40*var(--u));height:calc(40*var(--u));border-radius:50%;background:#2f3336;color:#fff;display:grid;place-items:center;font-size:calc(22*var(--u));font-weight:500;flex:none;margin:0 calc(-5*var(--u)) 0 calc(-3*var(--u))}
+.sr.hidden+.sr::before{display:none}
+.lout{display:flex;align-items:center;justify-content:center;gap:calc(14*var(--u));width:calc(100% - 34*var(--u));margin:calc(27*var(--u)) calc(17*var(--u)) 0;height:calc(72*var(--u));border-radius:calc(36*var(--u));background:#e05a5a;color:#fff;font-size:calc(22*var(--u));font-weight:500}
+.fr .av{flex:none}
+.mic.lis{background:#eff3f4}
+.chips{display:flex;flex-wrap:wrap;gap:calc(10*var(--u));padding:0 calc(16*var(--u)) calc(14*var(--u))}
+.chips:empty{display:none}
+.chip{display:flex;align-items:center;gap:calc(8*var(--u));background:#2a2d31;border-radius:calc(14*var(--u));padding:calc(6*var(--u)) calc(10*var(--u));font-size:calc(17*var(--u));max-width:100%}
+.chip img{width:calc(40*var(--u));height:calc(40*var(--u));border-radius:calc(8*var(--u));object-fit:cover}
+.chip b{font-weight:400;max-width:calc(200*var(--u));overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip button{font-size:calc(24*var(--u));color:#71767b;padding:0 4px}
+.dlg{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:60;display:none;align-items:center;justify-content:center;padding:calc(30*var(--u))}
+.dlg.on{display:flex}
+.dbox{width:100%;background:#202327;border-radius:calc(28*var(--u));padding:calc(28*var(--u))}
+.dbox h3{font-size:calc(26*var(--u));font-weight:600}
+.dbox p{margin-top:calc(10*var(--u));font-size:calc(21*var(--u));line-height:1.4;color:#a7abaf}
+.dbox p:empty{display:none}
+.dbox input{width:100%;margin-top:calc(16*var(--u));padding:calc(14*var(--u)) calc(18*var(--u));border-radius:calc(16*var(--u));border:1px solid #2f3336;background:#111;color:var(--text);font:inherit;font-size:calc(21*var(--u))}
+.dbox input[hidden]{display:none}
+.dbt{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:calc(10*var(--u));margin-top:calc(22*var(--u))}
+.dbt button{padding:calc(12*var(--u)) calc(22*var(--u));border-radius:calc(24*var(--u));font-size:calc(21*var(--u));font-weight:500;color:#eff3f4}
+.dbt button[hidden]{display:none}
+.dbt #da,.dbt .dng{color:#ff6b6b}
+.gt{position:absolute;left:50%;bottom:calc(60*var(--u));transform:translateX(-50%);background:#2a2d31;color:#fff;padding:calc(14*var(--u)) calc(26*var(--u));border-radius:calc(30*var(--u));font-size:calc(20*var(--u));z-index:70;opacity:0;pointer-events:none;transition:opacity .2s;max-width:90%;text-align:center}
+.gt.on{opacity:1}
+html.light .app{filter:invert(1) hue-rotate(180deg)}
+html.light img,html.light .av,html.light .lout,html.light .gc,html.light iframe{filter:invert(1) hue-rotate(180deg)}
+.ms{position:relative;width:calc(56*var(--u));height:calc(56*var(--u));flex:none;transition:width .3s cubic-bezier(.32,.72,0,1)}
+.ms .mic{position:absolute;left:0;top:0;width:calc(56*var(--u));height:calc(56*var(--u))}
+.ms .send{position:absolute;right:0;top:0;display:grid;opacity:0;transform:scale(.4);pointer-events:none;transition:opacity .2s ease,transform .3s cubic-bezier(.32,.72,0,1)}
+.typing .ms{width:calc(123*var(--u))}
+.typing .ms .send{opacity:1;transform:none;pointer-events:auto}
+.busy .ms{width:calc(56*var(--u))}
+.at table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin-top:calc(14*var(--u))}
+.at th,.at td{border:1px solid #2f3336;padding:6px 10px;text-align:left;white-space:nowrap}
+.at th{background:#16181c}
+.at a{color:#eff3f4}
+.ac:not(.ic){gap:calc(18*var(--u))}
+.ac:not(.ic) .x[data-a=rd]{display:flex;width:calc(40*var(--u));justify-content:center}
+
+main{position:relative;margin-top:calc(-80*var(--u));padding-top:calc(80*var(--u));-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 calc(90*var(--u)));mask-image:linear-gradient(to bottom,transparent 0,#000 calc(90*var(--u)))}
+header{position:relative;z-index:3}
+.hero[hidden],.msgs[hidden]{display:none!important}
+.hero{transition:opacity .4s ease,transform .4s ease}
+.hero.out{position:absolute;left:0;right:0;top:calc(80*var(--u));bottom:0;margin:0;justify-content:center;opacity:0;transform:translateY(calc(-24*var(--u)));pointer-events:none}
+
+.m,.ar,.at{font-size:16px;line-height:1.5}
+.ti{font-size:16px}
+textarea{font-size:16px;line-height:24px;height:24px;max-height:144px}
+.cc pre{font-size:14px;line-height:1.5}
+.kw{color:#c792ea}.nm{color:#f78c6c}.kw,.nm{font-style:normal}
+.mth,.mthb{font-family:Georgia,serif;font-style:italic}.mthb{display:block;text-align:center;margin:8px 0}
+.at li>ul,.at li>ol{margin-top:4px}
+.sug{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:calc(34*var(--u));max-width:100%}
+.sug button{background:var(--chip);border-radius:999px;padding:10px 16px;font-size:14px;line-height:1.3;color:var(--text)}
+.tobot{position:sticky;bottom:10px;align-self:center;flex:none;width:36px;height:36px;margin-top:-46px;border-radius:50%;background:var(--chip);border:1px solid #2f3336;display:grid;place-items:center;z-index:2}
+.tobot[hidden],#msgs[hidden]~.tobot{display:none}
+.pjr{background:#16181c}
+.pjs{position:absolute;inset:0;z-index:12;background:var(--bg);display:none;flex-direction:column}.pjs.on{display:flex}
+.pjh{height:calc(80*var(--u));display:flex;align-items:center;gap:calc(8*var(--u));padding:0 calc(20*var(--u)) 0 calc(21*var(--u));flex:none}.pjh h1{font-size:20px;font-weight:500}
+.pjbody{flex:1;overflow-y:auto;padding:8px calc(19*var(--u)) 24px;display:flex;flex-direction:column;gap:10px}
+.pjbody button{text-align:left;border-radius:16px;background:#16181c;padding:14px 18px;font-size:16px;color:var(--text)}.pjbody .pjn{background:#202327;font-weight:500}
+.pjc b{display:block;font-weight:500}.pjc small,.pji small{color:#71767b;font-size:13px}.pji{background:#16181c;border-radius:16px;padding:14px 18px}.pji p{margin-top:4px;font-size:15px;line-height:1.45;color:#a7abaf}
+.pjbody .dg{color:#e0707a}.pje{color:#71767b;font-size:15px;padding:12px 4px}
+.pw{position:absolute;inset:0;z-index:35;display:none;background:rgba(0,0,0,.25)}.pw.on{display:block}
+.pc{position:absolute;left:calc(12*var(--u));width:calc(384*var(--u));min-width:250px;max-width:calc(100% - 24px);background:#202327;border-radius:22px;padding:8px 0;box-shadow:0 8px 30px rgba(0,0,0,.5)}
+.pc button{display:flex;align-items:center;gap:22px;width:100%;padding:0 22px;height:52px;font-size:17px;color:#e7e9ea;text-align:left}
+.pc svg{width:24px;height:24px;flex:none;color:#71767b}.pc .rd,.pc .rd svg{color:#e0707a}
+.ti{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}.it .kb{display:none}
+
+/* ===== Tampilan baru: menu geser + halaman Proyek ===== */
+.drawer{width:calc(438*var(--u));background:#000000}
+.dh{height:calc(84*var(--u));padding-left:calc(24*var(--u));font-size:calc(44*var(--u));font-weight:600;letter-spacing:calc(-.5*var(--u))}
+.search{margin:0 calc(23*var(--u)) 0;height:calc(55*var(--u));border-radius:calc(28*var(--u));background:#202327;border:0;padding:0 calc(16*var(--u)) 0 calc(16*var(--u));gap:calc(16*var(--u))}
+.search input{font-size:calc(20*var(--u))}
+.dp{display:flex;align-items:center;width:calc(100% - 46*var(--u));margin:calc(35*var(--u)) calc(23*var(--u)) 0;height:calc(60*var(--u));gap:calc(16*var(--u));flex:none;text-align:left}
+.dpi{width:calc(58*var(--u));height:calc(60*var(--u));border-radius:calc(16*var(--u));background:#202327;display:grid;place-items:center;flex:none}
+.dpt{flex:1;font-size:calc(21.5*var(--u));font-weight:500}
+.pjbd{min-width:calc(36*var(--u));height:calc(36*var(--u));border-radius:calc(18*var(--u));background:#202327;color:#e7e9ea;display:grid;place-items:center;font-size:calc(19*var(--u));font-weight:500;margin-right:calc(12*var(--u))}
+.pjbd[hidden]{display:none}
+.nc{margin:calc(23*var(--u)) calc(23*var(--u)) 0;height:calc(67*var(--u));border-radius:calc(34*var(--u));background:#eff3f4;color:#fff;justify-content:center;padding:0;gap:calc(14*var(--u));font-size:calc(22*var(--u));font-weight:600}
+.lab{margin-top:calc(33*var(--u));margin-bottom:calc(11*var(--u));font-size:calc(19*var(--u))}
+.grp:first-child .lab{margin-top:calc(39*var(--u))}
+.it{height:calc(66*var(--u));margin:0 calc(13*var(--u));padding:0 calc(16*var(--u)) 0 calc(21*var(--u));border-radius:calc(22*var(--u))}
+.it.on{background:#202327}
+.ti{gap:calc(23*var(--u))}
+.it .kb{display:grid;width:calc(32*var(--u));height:calc(48*var(--u))}
+.ft{margin:0 calc(23*var(--u));padding:calc(20*var(--u)) 0 calc(16*var(--u))}
+.fr{height:calc(56*var(--u));padding:0 calc(14*var(--u)) 0 calc(5*var(--u));gap:calc(19*var(--u))}
+.fr .av{width:calc(56*var(--u));height:calc(56*var(--u));background:#2f3336;font-size:calc(26*var(--u));margin:0}
+.fr #pname{font-size:calc(22*var(--u))}
+.pjh{gap:calc(23*var(--u))}.pjh h1{font-size:calc(30*var(--u));font-weight:500}
+.pjt{flex:none;padding:calc(8*var(--u)) calc(17*var(--u)) 0;display:none}
+.pjs.lst .pjt{display:block}
+.pjsr{display:flex;align-items:center;height:calc(61*var(--u));border-radius:calc(31*var(--u));background:#16181c;border:1px solid #2f3336;padding:0 calc(16*var(--u)) 0 calc(19*var(--u));gap:calc(16*var(--u))}
+.pjsr input{flex:1;min-width:0;border:0;background:none;color:var(--text);font:inherit;font-size:calc(20*var(--u))}
+.pjsr input::placeholder{color:#71767b}.pjsr input:focus{outline:none}
+.chps{display:flex;gap:calc(9*var(--u));margin-top:calc(18*var(--u))}
+.chp{height:calc(54*var(--u));padding:0 calc(25*var(--u));border-radius:calc(27*var(--u));border:1px solid #2f3336;background:#000000;font-size:calc(20*var(--u));font-weight:500;color:var(--text)}
+.chp.on{background:#eff3f4;border-color:#eff3f4;color:#fff}
+.pjs.lst .pjbody{padding:calc(19*var(--u)) calc(17*var(--u)) calc(150*var(--u));gap:calc(10*var(--u))}
+.pcd{display:flex;align-items:flex-start;height:calc(126*var(--u));flex:none;border-radius:calc(24*var(--u));background:#16181c}
+.pjbody .pcb{flex:1;min-width:0;height:100%;display:flex;align-items:center;gap:calc(29*var(--u));padding:0 0 0 calc(20*var(--u));background:none;border-radius:calc(24*var(--u))}
+.pci{width:calc(81*var(--u));height:calc(81*var(--u));border-radius:calc(22*var(--u));display:grid;place-items:center;flex:none}
+.pct{min-width:0;display:flex;flex-direction:column;gap:calc(5*var(--u))}
+.pct b{font-size:calc(24*var(--u));font-weight:500;line-height:calc(31*var(--u));white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pct small{font-size:calc(19.5*var(--u));line-height:calc(26*var(--u));color:#71767b}
+.pjbody .pck{width:calc(56*var(--u));height:calc(56*var(--u));margin:calc(12*var(--u)) calc(6*var(--u)) 0 0;padding:0;background:none;display:grid;place-items:center;flex:none}
+.fab{display:none;position:absolute;right:calc(25*var(--u));bottom:calc(76*var(--u));height:calc(73*var(--u));padding:0 calc(28*var(--u)) 0 calc(26*var(--u));border-radius:calc(37*var(--u));background:#eff3f4;color:#fff;align-items:center;gap:calc(14*var(--u));font-size:calc(21*var(--u));font-weight:600;box-shadow:0 6px 20px rgba(0,0,0,.4)}
+.pjs.lst .fab{display:flex}
+
+.pjf{display:flex;align-items:center;gap:10px;padding:6px 0;font-size:15px}.pjf span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pjbody .pjf button{width:32px;height:32px;padding:0;background:none;border-radius:50%;font-size:22px;color:#71767b;text-align:center}
+#dp{white-space:pre-wrap;max-height:40vh;overflow:auto}
+
+/* ===== Tema Grok: tombol terang butuh teks/ikon gelap ===== */
+.nc,.go,.chp.on,.fab{color:#000}
+.nc svg,.fab svg,.lout svg{stroke:currentColor}
+.sw.on::after{background:#000}
+.mic.lis svg path{fill:#000}
+.speak,.stop{color:#000}
+/* Pemilih model disembunyikan sampai diaktifkan oleh pemilik aplikasi. */
+#model,#qsheet,#msheet,#mscrim{display:none!important}
+/* ===== Chat Privat: tombol kanan header sebelum chat dimulai ===== */
+#priv{display:grid}#new{display:none}
+.app.started #priv{display:none}.app.started #new{display:grid}
+#priv.on{background:#eff3f4;border-radius:50%}#priv.on svg{stroke:#000}
+/* ===== Ukuran font gaya Grok (pengaturan, menu, dialog, login) ===== */
+.sh h1{font-size:20px;font-weight:600}
+.sl{font-size:14px;line-height:20px;font-weight:500;color:#71767b}
+.tx b{font-size:16px;line-height:22px;font-weight:500}
+.tx small{font-size:13px;line-height:18px;color:#71767b}
+.lout{font-size:16px}
+.dh{font-size:24px}
+.search input,.pjsr input{font-size:16px}
+.dpt,.nc,.fr #pname,.fr{font-size:16px}
+.lab{font-size:13px;color:#71767b}
+.pjh h1{font-size:20px;font-weight:600}
+.pct b{font-size:16px;line-height:22px}
+.pct small{font-size:13px;line-height:18px}
+.chp{font-size:14px}.fab{font-size:15px}
+.phead{font-size:17px}.pcard{font-size:14px}
+.prow .tx b{font-size:16px;line-height:22px}
+.prow .tx small{font-size:13px;line-height:18px}
+.dbox h3{font-size:18px}.dbox p{font-size:15px}.dbox input{font-size:16px}.dbt button{font-size:15px}
+.pc button{font-size:16px}
+.lb h2{font-size:30px}.lb .st{font-size:15px;line-height:22px}
+.fld input{font-size:16px}.fg{font-size:14px}.go,.gg{font-size:16px}.rg{font-size:14px}
+.gt,.tst{font-size:14px}
+.ac button{font-size:13px}.ch{font-size:13px}.chip{font-size:13px}
+.sources{display:flex;flex-direction:column;gap:6px;margin-top:12px;padding:10px 12px;border:1px solid #2f3336;border-radius:12px;background:#16181c}.sources b{font-size:13px;color:#a7abaf}.sources a{color:#8ab4f8;font-size:13px;overflow-wrap:anywhere;text-decoration:underline}.sources small{font-size:12px;color:#a7abaf;line-height:1.4}.imgwait{margin:12px 0;padding:16px;border:1px solid #2f3336;border-radius:12px;color:#a7abaf;font-size:14px}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <button class="hb" id="menu" aria-label="Menu">
+      <svg viewBox="0 0 27 18" style="width:calc(27*var(--u));height:calc(18*var(--u))"><path d="M1.3 2h24.4M1.3 9h24.4M1.3 16h24.4" stroke="#e7e9ea" stroke-width="2.6" stroke-linecap="round"/></svg>
+    </button>
+    <button class="hb" id="priv" aria-label="Chat privat" aria-pressed="false"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u))" fill="none" stroke="#e7e9ea" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M9 10h.01M15 10h.01M12 2a8 8 0 0 0-8 8v12l3-3 2.5 2.5L12 19l2.5 2.5L17 19l3 3V10a8 8 0 0 0-8-8z"/></svg></button>
+    <button class="hb" id="new" aria-label="Chat baru">
+      <svg viewBox="0 0 28 28" style="width:calc(28*var(--u));height:calc(28*var(--u))"><path d="M4.5 1.2h19a3 3 0 0 1 3 3v15.3a3 3 0 0 1-3 3H9L2 28V4.2a3 3 0 0 1 2.5-3z" fill="none" stroke="#e7e9ea" stroke-width="2" stroke-linejoin="round"/><path d="M14.5 7v9.6M9.7 11.8h9.6" stroke="#e7e9ea" stroke-width="2" stroke-linecap="round"/></svg>
+    </button>
+  </header>
+
+  <main id="main">
+    <div class="hero" id="hero">
+      <svg viewBox="0 -7 130 105" style="width:calc(130*var(--u));height:calc(105*var(--u));margin-left:calc(12*var(--u))" aria-hidden="true"><path d="M79.84 10.92A49 49 0 1 0 95.84 34.6H60.5L45.5 55.4H76.26A28 28 0 1 1 66.62 27.24Z" fill="#ffffff"/><path d="M111.5-6.4Q114.6 8 129 11.1Q114.6 14.2 111.5 28.6Q108.4 14.2 94 11.1Q108.4 8 111.5-6.4Z" fill="#ffffff"/></svg>
+      <h2>Gexa</h2>
+      <p>Apa yang bisa saya bantu hari ini?</p>
+      <div class="sug" id="sug"></div>
+    </div>
+    <div class="msgs" id="msgs" hidden></div>
+    <button class="tobot" id="tobot" aria-label="Ke bawah" hidden><svg viewBox="0 0 24 24" style="width:20px;height:20px" fill="none" stroke="#e7e9ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M6 13l6 6 6-6"/></svg></button>
+  </main>
+
+  <div class="box" id="box">
+    <textarea id="t" rows="1" placeholder="Tanya apa saja" aria-label="Tanya apa saja"></textarea>
+    <div class="chips" id="chips"></div>
+    <div class="tst" id="tst"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="#eff3f4"/><path d="m7.5 12.3 3.1 3.1 5.9-6.4" fill="none" stroke="#111" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg><span></span></div>
+    <div class="row">
+      <button class="circ" id="plus" aria-label="Tambah" aria-expanded="false" aria-controls="psheet">
+        <svg viewBox="0 0 24 24" style="width:calc(30*var(--u));height:calc(30*var(--u))"><path d="M12 4v16M4 12h16" stroke="#e7e9ea" stroke-width="2.2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="model" id="model" aria-label="Model Gexa" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" style="width:calc(24*var(--u));height:calc(24*var(--u))"><path d="M13.2 2.5 4.5 13.6h6.2l-1 7.9 8.8-11.3h-6.2z" fill="none" stroke="#e7e9ea" stroke-width="2" stroke-linejoin="round"/></svg>
+        <span id="mname">Gexa Fast</span><svg viewBox="0 0 24 24" style="width:calc(24*var(--u));height:calc(24*var(--u))"><path d="m6 9 6 6 6-6" fill="none" stroke="#e7e9ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <span class="sp"></span>
+      <span class="ms"><button class="circ mic" aria-label="Mikrofon">
+        <svg viewBox="0 0 24 24" style="width:calc(34*var(--u));height:calc(34*var(--u))"><path fill="#e7e9ea" d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm-1-9a1 1 0 0 1 2 0v6a1 1 0 0 1-2 0V5zm6 6a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.9V21h2v-3.1A7 7 0 0 0 19 11h-2z"/></svg>
+      </button>
+      <button class="send" id="send" aria-label="Kirim">
+        <svg viewBox="0 0 24 24" style="width:calc(26*var(--u));height:calc(26*var(--u));transform:rotate(-45deg) translate(1px,0)"><path fill="#000" d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button></span>
+            <button class="stop" id="stop" aria-label="Berhenti"><i></i></button>
+          </div>
+  </div>
+
+  <div class="pwrap"><div class="pin">
+    <section class="psheet" id="psheet" aria-label="Tambahkan ke chat">
+      <div class="phandle"></div>
+      <div class="phead">Tambahkan ke chat</div>
+      <div class="pgrid">
+        <button class="pcard"><span class="pic"><svg viewBox="0 0 24 24" style="width:calc(36*var(--u));height:calc(36*var(--u))" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8.5A1.5 1.5 0 0 1 5.5 7H8l1.4-2.2h5.2L16 7h2.5A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5z"/><circle cx="12" cy="13" r="3.4"/></svg></span>Kamera</button>
+        <button class="pcard"><span class="pic"><svg viewBox="0 0 24 24" style="width:calc(36*var(--u));height:calc(36*var(--u))" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2.5"/><circle cx="9" cy="9.2" r="1.6"/><path d="m4.5 17 4.6-4.4 3.4 3.2 3-3 4.5 4.4"/></svg></span>Foto</button>
+        <button class="pcard"><span class="pic"><svg viewBox="0 0 24 24" style="width:calc(36*var(--u));height:calc(36*var(--u))" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7.5A2 2 0 0 0 5.5 5v14a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h4.5M12 17v-6M9.5 13.5 12 11l2.5 2.5"/></svg></span>File</button>
+      </div>
+      <button class="prow">
+        <span class="pic"><svg viewBox="0 0 24 24" style="width:calc(34*var(--u));height:calc(34*var(--u))" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M8 4h8M6.5 7.2h11M4.5 10.5h15l-1.6 8.2a2 2 0 0 1-2 1.6H8.1a2 2 0 0 1-2-1.6z"/></svg></span>
+        <span class="tx"><b>Tambahkan ke proyek</b><small>Tidak ada</small></span>
+        <svg viewBox="0 0 16 16" style="width:calc(19*var(--u));height:calc(19*var(--u));flex:none"><path d="M5 2.5 10.5 8 5 13.5" fill="none" stroke="#71767b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+</section>
+  </div></div>
+
+  <div class="mscrim" id="mscrim"></div>
+  <section class="qsheet" id="qsheet" role="dialog" aria-label="Pilih model">
+    <div class="mhead">
+      <button class="hb" id="qx" aria-label="Tutup"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u))"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="#e7e9ea" stroke-width="2" stroke-linecap="round"/></svg></button>
+      Pilih model
+    </div>
+    <div class="qbody">
+      <div class="qgrp" id="qgrp"></div>
+      <button class="prow" id="qeffort">
+        <span class="pic"><svg viewBox="0 0 24 24" style="width:calc(34*var(--u));height:calc(34*var(--u))" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 12a8.5 8.5 0 1 0 2.6-6.1"/><path d="M3.5 4.5v4h4"/><path d="M12 7.6V12l3 2"/></svg></span>
+        <span class="tx"><b>Upaya</b><small class="qb">Ekstra</small></span>
+        <svg viewBox="0 0 16 16" style="width:calc(19*var(--u));height:calc(19*var(--u));flex:none"><path d="M5 2.5 10.5 8 5 13.5" fill="none" stroke="#71767b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+      <button class="prow" id="qmore">
+        <span class="pic"><svg viewBox="0 0 24 24" style="width:calc(34*var(--u));height:calc(34*var(--u))" fill="#e7e9ea"><circle cx="5.5" cy="12" r="1.8"/><circle cx="12" cy="12" r="1.8"/><circle cx="18.5" cy="12" r="1.8"/></svg></span>
+        <span class="tx"><b>Model lainnya</b></span>
+        <svg viewBox="0 0 16 16" style="width:calc(19*var(--u));height:calc(19*var(--u));flex:none"><path d="M5 2.5 10.5 8 5 13.5" fill="none" stroke="#71767b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>
+  </section>
+  <section class="msheet" id="msheet" role="dialog" aria-label="Model Gexa">
+    <div class="mhead">
+      <button class="hb" id="mback" aria-label="Kembali"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u))"><path d="M20 12H5M11 5l-7 7 7 7" fill="none" stroke="#e7e9ea" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      Model Gexa
+    </div>
+    <div class="mlist" id="mlist"></div>
+  </section>
+
+  <div class="scrim" id="scrim"></div>
+  <aside class="drawer" aria-label="Riwayat percakapan">
+    <div class="dh">Gexa</div>
+    <label class="search"><svg viewBox="0 0 24 24" style="width:calc(26*var(--u));height:calc(26*var(--u));flex:none" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5.5 5.5"/></svg><input id="q" type="search" placeholder="Cari percakapan" aria-label="Cari percakapan"></label>
+    <button class="dp" id="dproj"><span class="dpi"><svg viewBox="0 0 24 24" style="width:calc(30*var(--u));height:calc(30*var(--u))" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 7.5A1.5 1.5 0 0 1 5 6h4l2 2h8a1.5 1.5 0 0 1 1.5 1.5v8A1.5 1.5 0 0 1 19 19H5a1.5 1.5 0 0 1-1.5-1.5z"/></svg></span><span class="dpt">Proyek</span><span class="pjbd" id="pjbd" hidden></span><svg viewBox="0 0 16 16" style="width:calc(18*var(--u));height:calc(18*var(--u));flex:none"><path d="M5 2.5 10.5 8 5 13.5" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    <button class="nc" id="dnew"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u));flex:none" fill="none" stroke="#fff" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5z"/></svg>Chat baru</button>
+    <div class="list" id="list"></div>
+    <div class="ft"><button class="fr" id="prof"><span class="av" id="pav">T</span><span id="pname">Tamu</span><svg viewBox="0 0 24 24" style="width:calc(30*var(--u));height:calc(30*var(--u));flex:none" fill="none" stroke="#e7e9ea" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></button></div>
+  </aside>
+
+  <section class="sett" id="sett" aria-label="Pengaturan">
+    <div class="sh">
+      <button class="hb" id="sback" aria-label="Kembali"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u))"><path d="M20 12H5M11 5l-7 7 7 7" fill="none" stroke="#e7e9ea" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+      <h1>Pengaturan</h1>
+    </div>
+    <div id="sbody"></div>
+    <button class="lout" id="lout"><svg viewBox="0 0 24 24" style="width:calc(30*var(--u));height:calc(30*var(--u))" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h4M15 8l4 4-4 4M19 12H9"/></svg><span>Keluar akun</span></button>
+    <div style="height:calc(60*var(--u))"></div>
+  </section>
+
+  <section class="login" id="login" aria-label="Masuk">
+    <div class="lh"><button class="hb" id="lclose" aria-label="Tutup"><svg viewBox="0 0 24 24" style="width:calc(26*var(--u));height:calc(26*var(--u))"><path d="M5 5l14 14M19 5 5 19" fill="none" stroke="#a7abaf" stroke-width="1.8" stroke-linecap="round"/></svg></button></div>
+    <div class="lb">
+      <div class="lgo" id="lgo"></div>
+      <h2>Gexa</h2>
+      <p class="st">Asisten cerdas untuk semua kebutuhanmu</p>
+      <label class="fld" style="margin-top:calc(74*var(--u))"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u));flex:none" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2.5"/><path d="m3.5 7 8.5 6.5L20.5 7"/></svg><input id="em" type="email" placeholder="Email" autocomplete="email" aria-label="Email"></label>
+      <label class="fld" style="margin-top:calc(29*var(--u))"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u));flex:none" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/><circle cx="12" cy="15.5" r="1" fill="#e7e9ea"/></svg><input id="pw" type="password" placeholder="Kata sandi" autocomplete="current-password" aria-label="Kata sandi"><button type="button" id="eye" aria-label="Tampilkan kata sandi"><svg viewBox="0 0 24 24" style="width:calc(30*var(--u));height:calc(30*var(--u));flex:none" fill="none" stroke="#e7e9ea" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3.2"/><path class="sl2" d="M4 4l16 16" style="display:none"/></svg></button></label>
+      <button class="fg">Lupa kata sandi?</button>
+      <button class="go" id="go">Masuk</button>
+      <button class="gg"><svg viewBox="0 0 24 24" style="width:calc(32*var(--u));height:calc(32*var(--u));flex:none"><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.6v3h3.9c2.3-2.1 3.5-5.2 3.5-8.8z"/><path fill="#34A853" d="M12 24c3.2 0 6-1.1 7.9-2.9l-3.9-3c-1.1.7-2.5 1.2-4 1.2-3.1 0-5.7-2.1-6.6-4.9H1.4v3.1C3.4 21.5 7.4 24 12 24z"/><path fill="#FBBC05" d="M5.4 14.4c-.2-.7-.4-1.5-.4-2.4s.1-1.6.4-2.4V6.5H1.4C.5 8.1 0 10 0 12s.5 3.9 1.4 5.5l4-3.1z"/><path fill="#EA4335" d="M12 4.8c1.7 0 3.3.6 4.5 1.8l3.4-3.4C17.9 1.2 15.2 0 12 0 7.4 0 3.4 2.5 1.4 6.5l4 3.1C6.3 6.9 8.9 4.8 12 4.8z"/></svg>Lanjut dengan Google</button>
+      <p class="rg">Belum punya akun? <button>Daftar</button></p>
+    </div>
+  </section>
+
+    <input type="file" id="fi" multiple hidden>
+  <div class="dlg" id="dlg"><div class="dbox"><h3 id="dt"></h3><p id="dp"></p><input id="di"><div class="dbt"><button id="dc">Batal</button><button id="da" hidden></button><button id="dok">OK</button></div></div></div>
+  <div class="gt" id="gt"></div>
+  <div class="prev" id="prev"><div><button class="hb" id="pback" aria-label="Kembali"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u))"><path d="M20 12H5M11 5l-7 7 7 7" fill="none" stroke="#e7e9ea" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>Pratinjau</div><iframe id="pf" sandbox="allow-scripts allow-forms" title="Pratinjau"></iframe></div>
+</div>
+
+<script>
+const t=document.getElementById('t'),box=document.getElementById('box'),msgs=document.getElementById('msgs'),hero=document.getElementById('hero'),main=document.getElementById('main');
+function add(c,x){const d=document.createElement('div');d.className='m '+c;d.textContent=x;msgs.appendChild(d);main.scrollTop=main.scrollHeight}
+function fit(){t.style.height='auto';t.style.height=t.scrollHeight+'px'}
+t.addEventListener('input',()=>{fit();box.classList.toggle('typing',t.value.trim().length>0||att.length>0)});
+/* ===== KONFIGURASI AI =====
+   API_URL kosong = mode demo. Backend POST menerima:
+   {task:'chat'|'image',prompt,system,messages:[{role,content,attachments?}],model,effort,project,search,think}
+   Attachment berisi {kind,name,type,encoding,data}. Balasan JSON: {reply,image?,sources?:[{title,url,snippet?}]}.
+   Mode SSE tetap mendukung data: {t:'potongan'} dan dapat mengirim sources pada event terakhir.
+   Pencarian web, pembuatan gambar, dan pemahaman file sungguhan tetap memerlukan backend yang mendukungnya. */
+const SYSTEM_PROMPT=`Kamu adalah Gexa, asisten AI yang ramah, cerdas, dan membantu. Gaya bicaramu natural seperti teman yang pintar: hangat, jelas, dan tidak kaku.
+
+CARA MENJAWAB:
+- Langsung ke inti: beri jawaban dulu, lalu penjelasan seperlunya. Jangan bertele-tele atau mengulang pertanyaan.
+- Sesuaikan panjang jawaban: pertanyaan sederhana dijawab singkat, topik rumit dijawab lebih lengkap.
+- Untuk soal teknis, matematika, atau proses, jelaskan langkah demi langkah dengan urutan bernomor.
+- Pakai bahasa yang sama dengan pengguna (default Bahasa Indonesia) dan samakan tingkat santai atau formalnya.
+- Kalau permintaan kurang jelas, tanyakan satu hal yang paling penting saja, atau ambil asumsi wajar dan sebutkan asumsinya.
+- Pertahankan konteks percakapan sebelumnya.
+
+FORMAT (Markdown):
+- Gunakan judul singkat, poin-poin, daftar bernomor, dan tabel hanya jika benar-benar membantu. Untuk obrolan biasa cukup paragraf pendek.
+- Tebalkan istilah atau poin penting secukupnya.
+- Kode selalu di dalam code block dengan nama bahasanya, harus lengkap dan siap dijalankan, lalu diikuti penjelasan singkat.
+- Boleh menutup dengan satu kalimat tawaran bantuan lanjutan yang relevan, bukan pertanyaan basa-basi.
+
+KEJUJURAN DAN KEAMANAN:
+- Jangan mengarang fakta, angka, atau sumber. Kalau tidak yakin atau tidak tahu, katakan terus terang.
+- Untuk topik kesehatan, hukum, dan keuangan, beri informasi yang berguna dan sebutkan kapan perlu bertanya ke profesional.
+- Tolak permintaan yang berbahaya dengan sopan dan singkat, lalu tawarkan alternatif yang aman.
+- Jika pengguna meminta gambar dan fitur gambar tidak tersedia, katakan jujur; jangan pura-pura membuatnya.
+- Kamu adalah Gexa. Jangan mengaku sebagai produk atau model AI lain.`;
+/* ===== KONFIGURASI PEMILIK (edit di file HTML, bukan di UI APK) =====
+   API_URL: alamat backend milikmu. Kosong = mode demo (AI sungguhan tidak tersambung).
+   WEB_SEARCH_ALWAYS_ON / DEEP_THINKING_ALWAYS_ON: aktif tanpa tombol di aplikasi.
+   Jangan masukkan API key atau kata sandi di HTML; file bisa diekstrak dari APK.
+   Backend harus mendukung pencarian web dan berpikir mendalam agar keduanya benar-benar bekerja. */
+const GEXA_CONFIG={API_URL:'',WEB_SEARCH_ALWAYS_ON:true,DEEP_THINKING_ALWAYS_ON:true,AUTO_REMEMBER_ALL:true};
+let API_URL=GEXA_CONFIG.API_URL;const AUTH_URL='';
+
+const hist=[];let stopFn=null,tt,model='Gexa Fast',effort='Ekstra',project='',cur=null;
+const LOGO=hero.querySelector('svg').outerHTML.replace(/ style="[^"]*"/,'');
+const IC={cp:'<rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',up:'<path d="M7 11v9H4v-9zM7 11l4-8a2 2 0 0 1 2 2v4h5.5a2 2 0 0 1 2 2.3l-1.2 6.5a2 2 0 0 1-2 1.7H7"/>',rt:'<path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4.5h-4.5"/>',sh:'<circle cx="6" cy="12" r="2.2"/><circle cx="18" cy="6" r="2.2"/><circle cx="18" cy="18" r="2.2"/><path d="m8 11 8-4M8 13l8 4"/>',mo:'<circle cx="12" cy="5" r="1.3" fill="currentColor"/><circle cx="12" cy="12" r="1.3" fill="currentColor"/><circle cx="12" cy="19" r="1.3" fill="currentColor"/>',pl:'<path d="M7 5v14l12-7z"/>',sp:'<path d="M4 9v6h4l5 4V5L8 9zM16.5 8.5a5 5 0 0 1 0 7"/>'};
+const sv=k=>'<svg viewBox="0 0 24 24">'+IC[k]+'</svg>';
+const ACT='<div class="ac"><button data-a="cp">'+sv('cp')+'<span>Salin</span></button><button data-a="up">'+sv('up')+'<span>Suka</span></button><button data-a="dn"><svg viewBox="0 0 24 24" style="transform:rotate(180deg)">'+IC.up+'</svg><span>Tidak suka</span></button><button data-a="rt">'+sv('rt')+'<span>Ulangi</span></button><button class="x" data-a="rd" aria-label="Bacakan">'+sv('sp')+'</button><button class="x" data-a="sh" aria-label="Bagikan">'+sv('sh')+'</button></div>';
+const GC='<div class="gc"><i></i><div class="gp"><div class="gr"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44"/><circle cx="50" cy="50" r="44"/></svg><span>0%</span></div><b>Sedang melukis idemu...</b><small>Kira-kira 10 detik</small></div></div>';
+const F='```';
+const TIPS='Tentu! Ini tips yang paling efektif:\n1. **Dengarkan podcast** 15 menit tiap hari\n2. **Latihan ngobrol** dengan diri sendiri\n3. **Catat 5 kata baru** setiap hari\n\nMau saya buatkan jadwal belajar mingguan?';
+const DEMO='Gexa masih dalam mode demo karena backend AI belum dikonfigurasi. Minta pembuat aplikasi menghubungkan server AI.';
+const CODE='Ini halaman login sederhana dengan HTML dan CSS:\n'+F+'html\n<!DOCTYPE html>\n<html lang="id">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1.0">\n<title>Login</title>\n<style>\n  body{font-family:system-ui,sans-serif;background:#0a0a0a;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;margin:0}\n  .login{background:#1a1a1a;padding:24px;border-radius:16px;width:100%;max-width:360px}\n  input,button{width:100%;padding:12px;border-radius:8px;border:1px solid #333;margin-bottom:12px;box-sizing:border-box;font:inherit}\n  input{background:#0a0a0a;color:#fff}\n  button{background:#3b82f6;border:0;font-weight:600;color:#fff;cursor:pointer}\n</style>\n</head>\n<body>\n  <form class="login">\n    <input type="email" placeholder="Email" required>\n    <input type="password" placeholder="Password" required>\n    <button>Masuk</button>\n  </form>\n</body>\n</html>\n'+F+'\nSimpan sebagai `login.html`, lalu buka di browser.';
+
+const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+function md(s){let h='',m=null,tb=null;const cl=()=>{if(m){h+='</'+m+'>';m=null}if(tb!==null){h+='<table>'+tb+'</table>';tb=null}};
+esc(s).split('\n').forEach(l=>{let x;
+if(/^\s*\|.*\|\s*$/.test(l)){if(/^[\s|:-]+$/.test(l))return;if(m){h+='</'+m+'>';m=null}const f=tb===null,c=l.trim().slice(1,-1).split('|'),g=f?'th':'td';tb=(tb||'')+'<tr>'+c.map(v=>'<'+g+'>'+v.trim()+'</'+g+'>').join('')+'</tr>';return}
+if(x=l.match(/^#{1,4}\s+(.*)/)){cl();h+='<p><b>'+x[1]+'</b></p>'}
+else if(x=l.match(/^\d+\.\s+(.*)/)){if(tb!==null)cl();if(m!=='ol'){cl();h+='<ol>';m='ol'}h+='<li>'+x[1]+'</li>'}
+else if(x=l.match(/^[-*]\s+(.*)/)){if(tb!==null)cl();if(m!=='ul'){cl();h+='<ul>';m='ul'}h+='<li>'+x[1]+'</li>'}
+else{cl();if(l.trim())h+='<p>'+l+'</p>'}});cl();
+return h.replace(/\*\*(.+?)\*\*/g,'<b>$1</b>').replace(/(^|[^*])\*([^*\n]+)\*/g,'$1<i>$2</i>').replace(/`([^`]+)`/g,'<code>$1</code>').replace(/\*(?=\S)([^*\n]*?\S)\*/g,'<i>$1</i>').replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,'<a href="$2" target="_blank" rel="noopener">$1</a>')}
+const hl=c=>esc(c).replace(/(&lt;!--[\s\S]*?--&gt;)|(&lt;\/?[\w!-]+)|("[^"\n]*")/g,(x,a,b)=>'<i class="'+(a?'k4':b?'k1':'k2')+'">'+x+'</i>');
+const card=(g,c)=>'<div class="cc"><div class="ch"><span>'+esc(g)+'</span><div><button data-c="cp">'+sv('cp')+'Salin</button>'+(/^html$/i.test(g)?'<button data-c="pv">'+sv('pl')+'Pratinjau</button>':'')+'</div></div><pre>'+hl2(g,c)+'</pre></div>';
+function render(m,s){let a='',x='';
+s.split(/(```[\s\S]*?(?:```|$))/).forEach(p=>{if(!p.trim())return;
+if(p.startsWith('```')){const q=p.match(/^```(\w*)[^\S\n]*\n?([\s\S]*?)(?:```)?$/);x+=card(q[1]||'kode',q[2].replace(/\n$/,''))}
+else if(!a&&!x)a=md(p);else x+='<div class="at">'+md(p)+'</div>'});
+m.querySelector('.at').innerHTML=a;m.querySelector('.ex').innerHTML=x;m.querySelector('.ac').classList.toggle('ic',s.includes('```'))}
+function appendSources(m,sources){
+if(!Array.isArray(sources)||!sources.length)return;
+const ex=m.querySelector('.ex');if(!ex)return;
+const wrap=document.createElement('div');wrap.className='sources';
+const title=document.createElement('b');title.textContent='Sumber';wrap.appendChild(title);
+sources.slice(0,8).forEach((s,i)=>{if(!s||typeof s.url!=='string')return;let u;try{u=new URL(s.url,location.href)}catch(e){return}if(u.protocol!=='https:')return;
+const a=document.createElement('a');a.href=u.href;a.target='_blank';a.rel='noopener noreferrer';a.textContent=(s.title||u.hostname||('Sumber '+(i+1))).slice(0,140);wrap.appendChild(a);
+if(s.snippet){const q=document.createElement('small');q.textContent=String(s.snippet).slice(0,260);wrap.appendChild(q)}});
+if(wrap.children.length>1){m._sources=sources.slice(0,8);ex.appendChild(wrap)}
+}
+
+function netMsg(e){const c=+e.message;if(!navigator.onLine)return'Tidak ada koneksi internet. Periksa jaringanmu lalu tekan Ulangi.';if(e.name==='AbortError')return'Server terlalu lama merespons (lebih dari 3 menit). Tekan Ulangi untuk mencoba lagi.';if(c===401||c===403)return'Akses ditolak (kode '+c+'). Periksa kunci akses atau masuk ulang.';if(c===404)return'Alamat server tidak ditemukan (404). Minta pembuat aplikasi memeriksa konfigurasi backend.';if(c===429)return'Terlalu banyak permintaan. Tunggu sebentar lalu tekan Ulangi.';if(c>=500)return'Server sedang bermasalah (kode '+c+'). Tekan Ulangi sebentar lagi.';if(e instanceof SyntaxError)return'Balasan server tidak dikenali. Pastikan server membalas {reply}.';return'Tidak bisa terhubung ke server. Minta pembuat aplikasi memeriksa konfigurasi backend lalu tekan Ulangi.'}
+addEventListener('offline',()=>toast('Kamu sedang offline'));addEventListener('online',()=>toast('Kembali online'));
+function reply(v,files){
+const m=document.createElement('div');m.className='am gen';m.innerHTML='<div class="ar">'+LOGO+'<div class="at"></div></div><div class="ex"></div>'+ACT;
+msgs.appendChild(m);main.scrollTop=main.scrollHeight;box.classList.add('busy');
+const at=m.querySelector('.at'),ex=m.querySelector('.ex'),tms=[];let dead=false;
+const fin=()=>{stopFn=null;box.classList.remove('busy');m.classList.remove('gen');if(!m.dataset.err)hist.push({role:'assistant',content:m.dataset.txt||'[gambar]',img:m.dataset.img,sources:m._sources||[]});save();if(document.hidden&&P[1]&&window.Notification&&Notification.permission==='granted')try{new Notification('Gexa','Jawaban sudah siap')}catch(e){};main.scrollTop=main.scrollHeight};
+stopFn=()=>{dead=true;try{ac.abort()}catch(e){}tms.forEach(x=>{clearTimeout(x);clearInterval(x)});if(ex.querySelector('.gc:not(.done)')){ex.innerHTML='';at.innerHTML='<p>Pembuatan gambar dihentikan.</p>';m.dataset.txt='Pembuatan gambar dihentikan.'}fin()};
+const stream=(s,sources)=>{let i=0;const id=setInterval(()=>{i=Math.min(s.length,i+Math.max(4,Math.ceil(s.length/50)));m.dataset.txt=s.slice(0,i);render(m,m.dataset.txt);main.scrollTop=main.scrollHeight;if(i>=s.length){clearInterval(id);appendSources(m,sources);fin()}},30);tms.push(id)};
+const gen=()=>{at.innerHTML='<p>Pembuatan gambar belum tersambung. Backend aplikasi perlu mendukung layanan gambar.</p>';ex.innerHTML='';m.dataset.txt='Pembuatan gambar belum tersambung. Backend aplikasi perlu mendukung layanan gambar.';fin()};
+const wantsImage=/gambar|lukis|ilustrasi|buatkan gambar|hasilkan gambar/i.test(v);if(wantsImage){at.innerHTML='<p>Mengirim permintaan gambar ke backend...</p>';ex.innerHTML='<div class="imgwait">Menunggu layanan gambar di server...</div>'}const ac=new AbortController();tms.push(setTimeout(()=>ac.abort(),180000));const sse=async r=>{const rd=r.body.getReader(),dc=new TextDecoder();let buf='',tx='',sources=[];m.dataset.txt='';for(;;){const {done,value}=await rd.read();if(done)break;buf+=dc.decode(value,{stream:true});const ls=buf.split('\n');buf=ls.pop();for(const l of ls){if(!l.startsWith('data:'))continue;const p=l.slice(5).trim();if(p==='[DONE]')continue;let j;try{j=JSON.parse(p)}catch(x){continue}if(j.error)throw new Error(j.error);tx+=j.t||'';if(Array.isArray(j.sources))sources=j.sources}if(dead)return{__s:1};m.dataset.txt=tx;render(m,tx);main.scrollTop=main.scrollHeight}appendSources(m,sources);fin();return{__s:1}};
+const go=()=>{if(API_URL){const wt=()=>new Promise(x=>tms.push(setTimeout(x,1200))),rq=n=>fetch(API_URL,{signal:ac.signal,method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOK},body:JSON.stringify({task:wantsImage?'image':'chat',prompt:v,system:SYSTEM_PROMPT+pjCtx()+(FL.web?'\nJika hasil pencarian disertakan server, sertakan sitasi yang benar dan jangan mengarang sumber.':''),messages:trim(hist),model:model,effort:effort,project:project,search:FL.web,think:FL.think,capabilities:{attachments:true,webSearch:FL.web,imageGeneration:wantsImage}})}).then(r=>{if(r.status>=500&&n<1&&!dead)return wt().then(()=>rq(n+1));return r}).catch(e=>{if(!dead&&n<1&&e.name!=='AbortError'&&navigator.onLine)return wt().then(()=>rq(n+1));throw e});rq(0).then(r=>{if(!r.ok){if(r.status===402||r.status===429)upsell(r.status);throw new Error(r.status)}return /event-stream/.test(r.headers.get('content-type')||'')?sse(r):r.json()}).then(d=>{if(dead||d.__s)return;
+if(d.image){ex.innerHTML='<div class="gc done"></div>';const im=new Image();im.alt='Hasil gambar dari AI';im.src=d.image;ex.firstChild.appendChild(im);if(d.reply)at.innerHTML=md(d.reply);m.dataset.img=d.image;m.dataset.txt=d.reply||'[gambar]';appendSources(m,d.sources);fin()}else stream(d.reply||(wantsImage?'Backend belum mengirim hasil gambar. Pastikan layanan gambar sudah diaktifkan di server.':''),d.sources)}).catch(e=>{if(dead)return;m.dataset.err=1;stream(netMsg(e))})}
+else if(wantsImage)gen();
+else if(FL.web)stream('Pencarian web belum tersambung karena backend AI belum diatur. Backend pencarian belum disiapkan oleh pembuat aplikasi.');
+else if(FL.think)stream('Mode berpikir mendalam hanya bekerja jika didukung backend AI.');
+else if(/html|css|javascript|\bjs\b|kode|coding|script|login/i.test(v))stream(CODE);
+else stream(/tips|belajar/i.test(v)?TIPS:DEMO)};
+tms.push(setTimeout(go,500))}
+function ask(v,f){f=f||[];hideHero();msgs.hidden=false;const tx=v+(f.length?'\n[Lampiran: '+f.map(x=>x.name).join(', ')+']':'');add('me',tx);
+const b=msgs.lastElementChild;f.filter(x=>x.type.startsWith('image/')).forEach(x=>{const i=new Image();i.src=x.data;i.style.cssText='display:block;max-width:100%;border-radius:12px;margin-top:8px';b.appendChild(i)});
+hist.push({role:'user',content:tx,imgs:f.filter(x=>x.type.startsWith('image/')).map(x=>x.data),docs:f.filter(x=>!x.type.startsWith('image/')).map(x=>({name:x.name,type:x.type,kind:x.kind||'file',encoding:x.encoding||'data-url',data:x.data}))});save();reply(v,f)}
+function send(){const v=t.value.trim();if((!v&&!att.length)||box.classList.contains('busy'))return;const mm=v.match(/^\s*(?:tolong\s+)?ingat(?:lah)?\s*(?:bahwa|:)\s*(.{3,300})$/is);if(mm){memAdd(mm[1]);toast('Disimpan di memori')}else if(v&&GEXA_CONFIG.AUTO_REMEMBER_ALL){memAdd(v)}const f=att.splice(0);t.value='';t.style.height='';box.classList.remove('typing');rc();ask(v||'Lihat lampiran ini',f)}
+
+function fb(s){const x=document.createElement('textarea');x.value=s;document.body.appendChild(x);x.select();try{document.execCommand('copy')}catch(e){}x.remove()}
+function cpy(s){try{navigator.clipboard.writeText(s).catch(()=>fb(s))}catch(e){fb(s)}}
+function toast(s){const g=app.classList.contains('sopen')||app.classList.contains('lopen')||!!document.querySelector('.pjs.on'),e=document.getElementById(g?'gt':'tst'),sp=e.querySelector('span')||e;sp.textContent=s;e.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>e.classList.remove('on'),2200)}
+const pv=document.getElementById('prev'),pf=document.getElementById('pf');
+document.getElementById('pback').onclick=()=>{pv.classList.remove('on');pf.srcdoc=''};
+document.getElementById('stop').onclick=()=>{stopFn&&stopFn()};
+document.getElementById('new').addEventListener('click',()=>{stopFn&&stopFn();hist.length=0;cur=null;att.length=0;rc()});
+msgs.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const m=b.closest('.am'),a=b.dataset.a,c=b.dataset.c;
+if(c){const code=b.closest('.cc').querySelector('pre').textContent;if(c==='cp'){cpy(code);toast('Kode disalin')}else{pf.srcdoc=code;pv.classList.add('on')}}
+else if(a==='cp'){cpy(m.dataset.txt||'');toast('Teks disalin')}
+else if(a==='up'||a==='dn'){b.classList.toggle('on');fbk(a,b.classList.contains('on'),m);m.querySelectorAll('[data-a=up],[data-a=dn]').forEach(x=>{if(x!==b)x.classList.remove('on')})}
+else if(a==='rd'){if(!window.speechSynthesis)return toast('Perangkat tidak mendukung suara');if(speechSynthesis.speaking){speechSynthesis.cancel();return}const u=new SpeechSynthesisUtterance((m.dataset.txt||'').replace(/```[\s\S]*?```/g,' kode ').replace(/[*#`|]/g,''));u.lang='id-ID';speechSynthesis.speak(u)}
+else if(a==='sh'){const x=m.dataset.txt||'';navigator.share?navigator.share({text:x}).catch(()=>{}):(cpy(x),toast('Teks disalin'))}
+else if(a==='rt'&&m===msgs.lastElementChild&&!box.classList.contains('busy')&&hist.length){m.remove();if(hist[hist.length-1].role==='assistant')hist.pop();reply(hist[hist.length-1].content)}});
+document.getElementById('send').addEventListener('click',send);
+t.addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey&&matchMedia('(pointer:fine)').matches){e.preventDefault();send()}});
+document.getElementById('new').addEventListener('click',()=>{msgs.innerHTML='';msgs.hidden=true;hero.hidden=false;t.value='';t.style.height='';box.classList.remove('typing')});
+
+const app=document.querySelector('.app'),openD=v=>app.classList.toggle('open',v);
+const CH='<svg viewBox="0 0 24 24" style="width:calc(26*var(--u));height:calc(26*var(--u));flex:none" fill="none" stroke="#f1f3f4" stroke-width="1.8" stroke-linejoin="round"><path d="M6 17.5 4 20V5.5A1.5 1.5 0 0 1 5.5 4h13A1.5 1.5 0 0 1 20 5.5v10a1.5 1.5 0 0 1-1.5 1.5z"/></svg>';
+const KB='<svg viewBox="0 0 24 24" style="width:calc(24*var(--u));height:calc(24*var(--u))" fill="#e3e3e3"><circle cx="12" cy="5" r="2.1"/><circle cx="12" cy="12" r="2.1"/><circle cx="12" cy="19" r="2.1"/></svg>';
+document.getElementById('menu').onclick=()=>{rl();pjBd();openD(true)};
+document.getElementById('scrim').onclick=()=>openD(false);
+addEventListener('keydown',e=>{if(e.key==='Escape')openD(false)});
+document.getElementById('dnew').onclick=()=>{document.getElementById('new').click();openD(false)};
+
+const I={
+account:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="10" r="3.2"/><path d="M6.2 18.6c1.3-2 3.4-3 5.8-3s4.5 1 5.8 3"/>',
+moon:'<path d="M20 14.5A8.5 8.5 0 0 1 9.5 4a8.5 8.5 0 1 0 10.5 10.5z"/>',
+bell:'<path d="M6 17v-6a6 6 0 0 1 12 0v6l1.5 2h-15z"/><path d="M10 21.5a2 2 0 0 0 4 0M12 3v2"/>',
+globe:'<circle cx="12" cy="12" r="10"/><ellipse cx="12" cy="12" rx="4.2" ry="10"/><path d="M2 12h20M4 7h16M4 17h16"/>',
+mic:'<rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21"/>',
+trash:'<path d="M4 6h16M9 6V4h6v2M6 6l1 14h10l1-14M10 10v6M14 10v6"/>',
+shield:'<path d="M12 2.5 4.5 5.5v5.8c0 4.5 3 8.3 7.5 10.2 4.5-1.9 7.5-5.7 7.5-10.2V5.5z"/><path d="m8.8 12 2.5 2.5 4.4-4.6"/>',
+info:'<circle cx="12" cy="12" r="10"/><path d="M12 11v6"/><circle cx="12" cy="7.6" r=".7" fill="#e3e3e3"/>'};
+const SI=k=>'<svg viewBox="0 0 24 24" style="width:calc(32*var(--u));height:calc(32*var(--u));flex:none" fill="none" stroke="#e3e3e3" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">'+I[k]+'</svg>';
+const CV='<svg viewBox="0 0 16 16" style="width:calc(19*var(--u));height:calc(19*var(--u));flex:none"><path d="M5 2.5 10.5 8 5 13.5" fill="none" stroke="#cfcfcf" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+const S=[['Umum',[['account','Informasi akun',''],['moon','Tema gelap','Gunakan tema gelap untuk pengalaman<br>terbaik',1],['bell','Notifikasi','Dapatkan pembaruan dan tips terbaru',0],['globe','Bahasa: Indonesia','Ubah bahasa aplikasi'],['mic','Suara &amp; mikrofon','Kelola preferensi suara dan akses mikrofon']]],['Data',[['trash','Hapus riwayat chat','Hapus semua chat secara permanen'],['shield','Privasi &amp; data','Kelola data, privasi, dan keamanan']]],['Lainnya',[['info','Tentang Gexa','Versi 1.0.0']]]];
+document.getElementById('sbody').innerHTML=S.map(([g,a])=>'<div class="sl">'+g+'</div><div class="sg">'+a.map(r=>'<button class="sr"'+(r[3]===undefined?'':' role="switch" aria-checked="'+(r[3]?'true':'false')+'"')+'>'+(r[0]==='account'?'<span class="av"></span>':SI(r[0]))+'<span class="tx"><b>'+r[1]+'</b><small>'+r[2]+'</small></span>'+(r[3]===undefined?CV:'<span class="sw'+(r[3]?' on':'')+'"></span>')+'</button>').join('')+'</div>').join('');
+const so=v=>app.classList.toggle('sopen',v);
+const settingsBody=document.getElementById('sbody'),settingsTitle=document.querySelector('#sett h1'),privacyPanel=document.createElement('div');
+privacyPanel.id='privacyPanel';privacyPanel.hidden=true;settingsBody.after(privacyPanel);
+let settingsSubpage=false;
+function returnSettingsHome(){privacyPanel.hidden=true;settingsBody.hidden=false;settingsTitle.textContent='Pengaturan';document.getElementById('lout').hidden=false;settingsSubpage=false}
+function openPrivacyData(){settingsSubpage=true;settingsBody.hidden=true;privacyPanel.hidden=false;settingsTitle.textContent='Privasi & data';document.getElementById('lout').hidden=true;privacyPanel.innerHTML='<div class="sl">Data pribadi</div><div class="sg"><button class="sr" id="exportData"><span>'+SI('shield')+'</span><span class="tx"><b>Unduh data chat</b><small>Ekspor percakapan ke file JSON</small></span>'+CV+'</button><button class="sr" id="privacyInfo"><span>'+SI('info')+'</span><span class="tx"><b>Penyimpanan & privasi</b><small>Data disimpan di perangkat ini</small></span>'+CV+'</button></div><p style="margin:18px 25px 28px;color:#a7abaf;font-size:15px;line-height:1.55">Chat privat tidak masuk riwayat. Pesan hanya dikirim ke server AI jika alamat backend sudah dikonfigurasi. File ekspor berisi salinan lokal; simpan dengan aman.</p>';
+document.getElementById('exportData').onclick=exportUserData;
+document.getElementById('privacyInfo').onclick=()=>dlg('Penyimpanan & privasi','Riwayat chat dan pengaturan disimpan di perangkat ini. Pesan dikirim ke server AI hanya jika alamat backend sudah dikonfigurasi.',{ok:'Mengerti',noCancel:1})}
+function closeSettings(){if(settingsSubpage)returnSettingsHome();else so(false)}
+document.getElementById('prof').onclick=()=>{openD(false);so(true)};
+document.getElementById('sback').onclick=closeSettings;
+addEventListener('keydown',e=>{if(e.key==='Escape')closeSettings()});
+
+const lo=v=>app.classList.toggle('lopen',v);
+document.getElementById('lgo').innerHTML=hero.querySelector('svg').outerHTML;
+let user=null;try{user=localStorage.getItem('gexa_user')}catch(e){}
+const accRow=document.querySelector('.sr'),lout=document.getElementById('lout');
+function upd(){lout.style.background=user?'':'#eff3f4';lout.style.color=user?'':'#000';lout.querySelector('span').textContent=user?'Keluar akun':'Masuk';
+accRow.querySelector('.av').textContent=user?user[0].toUpperCase():'T';accRow.querySelector('small').textContent=user||'Belum masuk, ketuk untuk masuk';
+document.getElementById('pav').textContent=user?user[0].toUpperCase():'T';document.getElementById('pname').textContent=user?user.split('@')[0]:'Tamu'}
+function setUser(v){user=v;try{v?localStorage.setItem('gexa_user',v):localStorage.removeItem('gexa_user')}catch(e){}upd()}
+accRow.onclick=()=>{if(!user)lo(true)};
+lout.onclick=()=>{if(user){setUser(null);so(false);toast('Berhasil keluar')}else lo(true)};
+upd();
+document.getElementById('lclose').onclick=()=>lo(false);
+addEventListener('keydown',e=>{if(e.key==='Escape')lo(false)});
+const pw=document.getElementById('pw'),em=document.getElementById('em');
+document.getElementById('eye').onclick=()=>{const h=pw.type==='password';pw.type=h?'text':'password';document.querySelector('.sl2').style.display=h?'':'none';document.getElementById('eye').setAttribute('aria-label',h?'Sembunyikan kata sandi':'Tampilkan kata sandi')};
+const hs=async x=>{try{const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(x));return [...new Uint8Array(b)].map(v=>v.toString(16).padStart(2,'0')).join('')}catch(e){return btoa(unescape(encodeURIComponent(x)))}};
+document.getElementById('go').onclick=async()=>{const e=em.value.trim().toLowerCase(),p=pw.value;
+if(!/^\S+@\S+\.\S+$/.test(e))return toast('Format email tidak valid'),em.focus();
+if(p.length<6)return toast('Kata sandi minimal 6 karakter'),pw.focus();
+const h=await hs(e+':'+p);
+if(AUTH_URL){try{const r=await fetch(AUTH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,password:p,register:reg})});const d=await r.json();if(!r.ok||d.error)return toast(d.error||'Login gagal')}catch(x){return toast('Tidak bisa menghubungi server akun')}}
+else{let A={};try{A=JSON.parse(localStorage.getItem('gexa_acc')||'{}')}catch(x){}
+if(reg){if(A[e])return toast('Email sudah terdaftar');A[e]=h;try{localStorage.setItem('gexa_acc',JSON.stringify(A))}catch(x){}}
+else if(A[e]!==h)return toast(A[e]?'Kata sandi salah':'Akun belum terdaftar, silakan Daftar')}
+setUser(e);lo(false);so(false);pw.value='';em.value='';setReg(false)};
+
+
+const plus=document.getElementById('plus'),pwrap=document.querySelector('.pwrap'),psheet=document.getElementById('psheet');
+const pm=v=>{const o=app.classList.toggle('popen',v);plus.setAttribute('aria-expanded',o);plus.setAttribute('aria-label',o?'Tutup':'Tambah');
+pwrap.style.height=o?psheet.offsetHeight+'px':'0px';
+if(o){t.blur();if(!msgs.hidden)setTimeout(()=>{main.scrollTop=main.scrollHeight},330)}};
+plus.onclick=()=>pm();
+addEventListener('resize',()=>{if(app.classList.contains('popen'))pwrap.style.height=psheet.offsetHeight+'px'});
+document.querySelectorAll('.pcard,.prow').forEach(b=>b.onclick=()=>pm(false));
+t.addEventListener('focus',()=>pm(false));
+addEventListener('keydown',e=>{if(e.key==='Escape')pm(false)});
+
+/* Isi daftar model di sheet "Model Gexa" (Model lainnya). Format: [nama, badge]
+   Contoh: ['Gexa Pro','Pro'], ['Gexa Max','Pro atau Max'], ['Gexa Lite'] */
+const MODELS=[['Gexa Lite','']];
+document.getElementById('mlist').innerHTML=MODELS.map(([n,b])=>'<button class="mrow"><span>'+n+'</span>'+(b?'<em class="mbadge">'+b+'</em>':'')+'</button>').join('');
+const mo=v=>app.classList.toggle('mopen',v),qo=v=>app.classList.toggle('qopen',v),closeM=()=>{mo(false);qo(false)};
+
+/* Isi daftar model di tampilan "Pilih model". Format: [nama, deskripsi, badge, terpilih]
+   Contoh: ['Gexa Pro','Untuk pekerjaan kompleks','Pro',false], ['Gexa Fast','Paling cepat','',true] */
+const PILIH=[['Gexa Fast','Paling cepat','',true],['Gexa Pro','Untuk pekerjaan kompleks','Pro',false]];
+const CK='<svg viewBox="0 0 24 24" style="width:calc(34*var(--u));height:calc(34*var(--u));flex:none" fill="none" stroke="#eff3f4" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5 9.5 18 20 6.5"/></svg>';
+function rq(){document.getElementById('qgrp').innerHTML=PILIH.map(([n,d,b,s])=>'<button class="qrow'+(s?' qsel':'')+'"><span class="qt"><span class="qn">'+n+(b?'<em class="mbadge">'+b+'</em>':'')+'</span>'+(d?'<span class="qd">'+d+'</span>':'')+'</span>'+(s?CK:'')+'</button>').join('');
+document.querySelectorAll('.qrow').forEach((b,i)=>b.onclick=()=>{if(PILIH[i][2]==='Pro'&&!isPro())return upsell(402);PILIH.forEach((p,j)=>p[3]=j===i);model=PILIH[i][0];document.getElementById('mname').textContent=model;rq();closeM()})}
+rq();
+
+document.getElementById('model').onclick=()=>{pm(false);t.blur();qo(true)};
+document.getElementById('qx').onclick=closeM;
+document.getElementById('qmore').onclick=()=>mo(true);
+document.getElementById('mscrim').onclick=closeM;
+document.getElementById('mback').onclick=()=>mo(false);
+document.querySelectorAll('.mrow').forEach(b=>b.onclick=closeM);
+addEventListener('keydown',e=>{if(e.key==='Escape'){app.classList.contains('mopen')?mo(false):qo(false)}});
+
+
+
+/* ===== FITUR TAMBAHAN ===== */
+const att=[],chips=document.getElementById('chips'),fi=document.getElementById('fi');
+function rc(){chips.innerHTML=att.map((a,i)=>'<span class="chip">'+(a.type.startsWith('image/')?'<img src="'+a.data+'">':'')+'<b>'+esc(a.name)+'</b><button data-i="'+i+'" aria-label="Hapus">×</button></span>').join('');box.classList.toggle('typing',t.value.trim().length>0||att.length>0)}
+chips.onclick=e=>{const b=e.target.closest('button');if(b){att.splice(+b.dataset.i,1);rc()}};
+fi.onchange=async()=>{for(const f of [...fi.files]){if(f.size>5e6){toast(f.name+' lebih dari 5 MB');continue}if(att.length>=5){toast('Maksimal 5 lampiran per pesan');break}
+const T=f.type||'application/octet-stream',isImg=/^image\/(jpeg|png|webp)$/.test(T),isText=/^(text\/|application\/(json|xml))/.test(T)||/\.(txt|md|csv|json|html|css|js|ts|py|java|c|cpp|xml|yml|yaml|log)$/i.test(f.name);
+const addOne=a=>{const total=att.reduce((n,x)=>n+(String(x.data||'').length),0)+String(a.data||'').length;if(total>10e6){toast('Total lampiran maksimal 10 MB per pesan');return}att.push(a);rc()};
+if(isImg){const r=new FileReader();r.onload=()=>{const im=new Image();im.onload=()=>{const k=Math.min(1,1280/Math.max(im.width,im.height)),c=document.createElement('canvas');c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.drawImage(im,0,0,c.width,c.height);addOne({name:f.name,type:'image/jpeg',kind:'image',encoding:'data-url',data:c.toDataURL('image/jpeg',.8)})};im.onerror=()=>toast('Gambar tidak dapat dibaca: '+f.name);im.src=r.result};r.readAsDataURL(f)
+}else if(isText){const r=new FileReader();r.onload=()=>addOne({name:f.name,type:T,kind:'file',encoding:'text',data:String(r.result)});r.onerror=()=>toast('File tidak dapat dibaca: '+f.name);r.readAsText(f)
+}else{const r=new FileReader();r.onload=()=>addOne({name:f.name,type:T,kind:'file',encoding:'data-url',data:r.result});r.onerror=()=>toast('File tidak dapat dibaca: '+f.name);r.readAsDataURL(f)}}fi.value=''};
+[['image/*','environment'],['image/*',''],['','']].forEach(([a,c],i)=>document.querySelectorAll('.pcard')[i].onclick=()=>{pm(false);fi.accept=a;c?fi.setAttribute('capture',c):fi.removeAttribute('capture');fi.click()});
+const D=document.getElementById('dlg'),di=document.getElementById('di');let dcb=null,dalt=null;
+function dlg(h,p,o,cb){o=o||{};document.getElementById('dt').textContent=h;document.getElementById('dp').textContent=p||'';di.hidden=o.input===undefined;di.value=o.input||'';
+const ok=document.getElementById('dok'),al=document.getElementById('da');ok.textContent=o.ok||'OK';ok.className=o.danger?'dng':'';al.hidden=!o.alt;al.textContent=o.alt||'';
+document.getElementById('dc').hidden=!!o.noCancel;dcb=cb;dalt=o.altcb;D.classList.add('on');if(!di.hidden)setTimeout(()=>di.focus(),60)}
+const dclose=()=>D.classList.remove('on');
+document.getElementById('dc').onclick=dclose;D.onclick=e=>{if(e.target===D)dclose()};
+document.getElementById('dok').onclick=()=>{const v=di.value,f=dcb;dclose();f&&f(v)};
+document.getElementById('da').onclick=()=>{const f=dalt;dclose();f&&f()};
+document.querySelector('#psheet .prow').onclick=()=>{pm(false);dlg('Proyek','Nama proyek untuk chat ini (kosongkan jika tanpa proyek)',{input:project,ok:'Simpan'},v=>{project=v.trim();document.querySelector('#psheet .prow small').textContent=project||'Tidak ada'})};
+
+const EF=['Cepat','Standar','Ekstra'];document.getElementById('qeffort').onclick=()=>{effort=EF[(EF.indexOf(effort)+1)%3];document.querySelector('#qeffort .qb').textContent=effort};
+document.querySelectorAll('.mrow').forEach((b,i)=>b.addEventListener('click',()=>{model=MODELS[i][0];document.getElementById('mname').textContent=model}));
+
+let chats=[];try{chats=JSON.parse(localStorage.getItem('gexa_chats')||'[]')}catch(e){}
+const IDB=new Promise(r=>{try{const q=indexedDB.open('gexa',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>r(q.result);q.onerror=()=>r(null)}catch(e){r(null)}});
+const kvGet=k=>IDB.then(d=>d?new Promise(r=>{const q=d.transaction('kv').objectStore('kv').get(k);q.onsuccess=()=>r(q.result);q.onerror=()=>r()}):undefined);
+const kvSet=(k,v)=>IDB.then(d=>d&&new Promise(r=>{const x=d.transaction('kv','readwrite');x.objectStore('kv').put(v,k);x.oncomplete=x.onerror=x.onabort=()=>r()}));
+let pst=0;
+const ps=()=>{clearTimeout(pst);pst=setTimeout(()=>IDB.then(d=>{if(d)kvSet('chats',chats.slice(0,500)).then(()=>{try{localStorage.removeItem('gexa_chats')}catch(e){}});else try{localStorage.setItem('gexa_chats',JSON.stringify(chats.slice(0,50),(k,v)=>k==='docs'?undefined:v))}catch(e){}}),300)};
+function save(){if(priv||!hist.length)return;let c=chats.find(x=>x.id===cur);if(!c){cur=Date.now();c={id:cur,title:'',hist:[],proj:curProj};chats.unshift(c)}c.title=c.title||mkTitle(hist[0].content);c.hist=hist.slice();c.ts=Date.now();ps();rl()}
+function rl(){const q=document.getElementById('q').value.toLowerCase(),d0=new Date().setHours(0,0,0,0),G={'Disematkan':[],'Hari ini':[],'Kemarin':[],'Sebelumnya':[]};
+chats.slice().sort((a,b)=>b.ts-a.ts).filter(c=>c.title.toLowerCase().includes(q)).forEach(c=>G[c.pin?'Disematkan':c.ts>=d0?'Hari ini':c.ts>=d0-864e5?'Kemarin':'Sebelumnya'].push(c));
+document.getElementById('list').innerHTML=Object.entries(G).filter(([,a])=>a.length).map(([g,a])=>'<div class="grp"><div class="lab">'+g+'</div>'+a.map(c=>'<div class="it'+(c.id===cur?' on':'')+'"><button class="ti" data-id="'+c.id+'">'+CH+'<span>'+esc(c.title)+'</span></button><button class="kb" data-id="'+c.id+'" aria-label="Opsi">'+KB+'</button></div>').join('')+'</div>').join('')||'<div class="lab">Belum ada percakapan</div>'}
+const mk=()=>{const m=document.createElement('div');m.className='am';m.innerHTML='<div class="ar">'+LOGO+'<div class="at"></div></div><div class="ex"></div>'+ACT;return m};
+function openChat(c){stopFn&&stopFn();cur=c.id;hist.length=0;c.hist.forEach(x=>hist.push(x));msgs.innerHTML='';hero.hidden=true;msgs.hidden=false;
+c.hist.forEach(x=>{if(x.role==='user'){add('me',x.content);(x.imgs||[]).forEach(d=>{const i=new Image();i.src=typeof d==='string'?d:d.data;i.style.cssText='display:block;max-width:100%;border-radius:12px;margin-top:8px';msgs.lastElementChild.appendChild(i)})}else{const m=mk();m.dataset.txt=x.content;msgs.appendChild(m);render(m,x.content==='[gambar]'?(x.img?'':'(Gambar tidak disimpan di riwayat)'):x.content);if(x.img){const e=m.querySelector('.ex');e.innerHTML='<div class="gc done"></div>';const im=new Image();im.alt='';im.src=x.img;e.firstChild.appendChild(im)}appendSources(m,x.sources)}});openD(false);main.scrollTop=main.scrollHeight}
+document.getElementById('q').oninput=rl;
+document.getElementById('list').onclick=e=>{const b=e.target.closest('button');if(!b)return;const c=chats.find(x=>x.id===+b.dataset.id);if(!c)return;
+if(b.classList.contains('ti'))openChat(c);else dlg('Ganti nama chat','',{input:c.title,ok:'Simpan',alt:'Hapus chat',altcb:()=>{chats=chats.filter(x=>x!==c);ps();rl();if(cur===c.id)document.getElementById('new').click()}},v=>{c.title=v.trim()||c.title;ps();rl()})};
+rl();
+
+const P=(()=>{try{return JSON.parse(localStorage.getItem('gexa_pref')||'{}')}catch(e){return{}}})();
+function sw(i,on){const r=document.querySelectorAll('.sr[role=switch]')[i];r.querySelector('.sw').classList.toggle('on',on);r.setAttribute('aria-checked',on);if(i===0)document.documentElement.classList.toggle('light',!on);P[i]=on;try{localStorage.setItem('gexa_pref',JSON.stringify(P))}catch(e){}}
+document.querySelectorAll('.sr[role=switch]').forEach((r,i)=>r.onclick=()=>{const on=!r.querySelector('.sw').classList.contains('on');
+if(i===1&&on){if(!('Notification' in window))return toast('Notifikasi tidak didukung di perangkat ini');Notification.requestPermission().then(p=>{if(p==='granted')sw(1,true);else toast('Izin notifikasi ditolak')})}else sw(i,on)});
+if(P[0]!==undefined)sw(0,P[0]);if(P[1]!==undefined)sw(1,P[1]);
+const R=[...document.querySelectorAll('.sr:not([role=switch])')];
+R[1].onclick=()=>toast('Saat ini baru tersedia Bahasa Indonesia');
+R[2].onclick=()=>{if(!navigator.mediaDevices)return toast('Perangkat tidak mendukung mikrofon');navigator.mediaDevices.getUserMedia({audio:true}).then(s=>{s.getTracks().forEach(x=>x.stop());toast('Akses mikrofon aktif')}).catch(()=>toast('Akses mikrofon ditolak. Izinkan lewat pengaturan perangkat.'))};
+R[3].onclick=()=>dlg('Hapus riwayat chat','Semua chat akan dihapus permanen dari perangkat ini.',{ok:'Hapus',danger:1},()=>{chats=[];ps();rl();document.getElementById('new').click();toast('Riwayat chat dihapus')});
+async function exportUserData(){try{const saved=await kvGet('chats'),memory=(()=>{try{return JSON.parse(localStorage.getItem('gexa_mem')||'[]')}catch(e){return[]}})(),prefs=(()=>{try{return JSON.parse(localStorage.getItem('gexa_pref')||'{}')}catch(e){return{}}})();const data={format:'gexa-data-v1',exportedAt:new Date().toISOString(),conversations:Array.isArray(saved)&&saved.length?saved:chats,memories:memory,preferences:prefs};const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='gexa-data-'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('Data chat berhasil diunduh')}catch(e){toast('Tidak dapat mengekspor data di perangkat ini')}}
+R[4].onclick=openPrivacyData;
+R[5].onclick=()=>dlg('Tentang Gexa','Gexa versi 1.0.0',{ok:'Tutup',noCancel:1});
+
+let reg=false;const setReg=v=>{reg=v;document.getElementById('go').textContent=v?'Daftar':'Masuk';document.querySelector('.rg').firstChild.textContent=v?'Sudah punya akun? ':'Belum punya akun? ';document.querySelector('.rg button').textContent=v?'Masuk':'Daftar'};
+document.querySelector('.rg button').onclick=()=>setReg(!reg);
+document.querySelector('.fg').onclick=()=>toast('Reset kata sandi butuh server akun (belum tersambung)');
+document.querySelector('.gg').onclick=()=>toast('Login Google butuh server akun (belum tersambung)');
+
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition,mic=document.querySelector('.mic');let rec=null;
+mic.onclick=()=>{if(rec)return rec.stop();if(!SR)return toast('Input suara tidak didukung di perangkat ini');rec=new SR();rec.lang='id-ID';rec.interimResults=true;const base=t.value;
+rec.onresult=e=>{t.value=(base+' '+[...e.results].map(r=>r[0].transcript).join('')).trim();fit();box.classList.toggle('typing',!!t.value.trim())};
+rec.onend=()=>{rec=null;mic.classList.remove('lis')};rec.onerror=()=>toast('Mikrofon tidak bisa dipakai');mic.classList.add('lis');rec.start()};
+
+function backTop(){const c=k=>app.classList.contains(k);
+if(D.classList.contains('on'))return dclose();
+if(pv.classList.contains('on')){pv.classList.remove('on');return pf.srcdoc=''}
+if(c('lopen'))return lo(false);if(c('sopen'))return closeSettings();if(c('mopen'))return mo(false);if(c('qopen'))return qo(false);if(c('popen'))return pm(false);if(c('open'))return openD(false)}
+window.onBackPressed=backTop;history.pushState({g:1},'');addEventListener('popstate',()=>{backTop();history.pushState({g:1},'')});
+
+/* ===== TAMBAHAN 2 ===== */
+msgs.addEventListener('click',e=>{const b=e.target.closest('.m.me');if(!b||box.classList.contains('busy'))return;
+const n=[...msgs.querySelectorAll('.m.me')].indexOf(b);let k=-1,idx=-1;hist.forEach((x,i)=>{if(x.role==='user'&&++k===n)idx=i});if(idx<0)return;
+const rm=all=>{let el=b;while(el&&(all||el===b||!el.classList.contains('me'))){const nx=el.nextElementSibling;el.remove();el=nx}};
+dlg('Edit pesan','',{input:hist[idx].content,ok:'Kirim ulang',alt:'Hapus',altcb:()=>{let j=idx+1;while(j<hist.length&&hist[j].role!=='user')j++;hist.splice(idx,j-idx);rm(false);
+if(hist.length)save();else{chats=chats.filter(x=>x.id!==cur);ps();rl();document.getElementById('new').click()}}},v=>{v=v.trim();if(!v)return;hist.length=idx;rm(true);ask(v)})});
+
+/* ===== AKUN LOKAL & MASUKAN ===== */
+function fbk(a,on,m){let f=[];try{f=JSON.parse(localStorage.getItem('gexa_fb')||'[]')}catch(e){}f.push({a:on?a:'none',t:(m.dataset.txt||'').slice(0,200),ts:Date.now()});try{localStorage.setItem('gexa_fb',JSON.stringify(f.slice(-100)))}catch(e){}if(on)toast('Terima kasih atas masukanmu')}
+const gxUsers=(()=>{try{return JSON.parse(localStorage.getItem('gexa_users')||'{}')}catch(e){return{}}})();
+const hashPw=async p=>{try{return [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode('gexa:'+p)))].map(b=>b.toString(16).padStart(2,'0')).join('')}catch(e){return btoa(unescape(encodeURIComponent(p)))}};
+document.getElementById('go').onclick=async()=>{const e=em.value.trim().toLowerCase();if(!e)return em.focus();if(!pw.value)return pw.focus();if(reg&&pw.value.length<6)return toast('Kata sandi minimal 6 karakter');const h=await hashPw(pw.value);
+if(reg){if(gxUsers[e])return toast('Email sudah terdaftar, silakan masuk');gxUsers[e]=h}else{if(!gxUsers[e])return toast('Akun belum terdaftar. Ketuk Daftar.');if(gxUsers[e]!==h)return toast('Kata sandi salah')}
+try{localStorage.setItem('gexa_users',JSON.stringify(gxUsers))}catch(x){}setUser(e);lo(false);so(false);pw.value='';em.value=''};
+
+/* ===== PERBAIKAN: server, Pro, streaming, suara ===== */
+let TOK='';try{TOK=localStorage.getItem('gexa_tok')||''}catch(e){}
+const FL={web:!!GEXA_CONFIG.WEB_SEARCH_ALWAYS_ON,think:!!GEXA_CONFIG.DEEP_THINKING_ALWAYS_ON};
+function base(){return API_URL.replace(/\/chat\/?$/,'')}
+function isPro(){try{return localStorage.getItem('gexa_pro')==='1'}catch(e){return false}}
+function upsell(c){dlg(c===402?'Butuh Gexa Pro':'Batas harian tercapai','Upgrade ke Pro untuk pemakaian tanpa batas dan model Gexa Pro.',{ok:'Upgrade'},buyPro)}
+async function buyPro(){if(!user)return lo(true);if(!base())return toast('Backend pembayaran belum disiapkan oleh pembuat aplikasi');
+try{const r=await fetch(base()+'/pay',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+TOK},body:'{}'});const d=await r.json();if(d.url)window.open(d.url,'_blank');else toast(d.error||'Pembayaran belum diatur di server')}catch(e){toast('Server tidak dapat dihubungi')}}
+/* login/daftar lewat server bila alamat server diisi */
+const oldGo=document.getElementById('go').onclick;
+document.getElementById('go').onclick=async()=>{if(!base())return oldGo();const e=em.value.trim().toLowerCase();if(!/^\S+@\S+\.\S+$/.test(e))return toast('Format email tidak valid');if(pw.value.length<6)return toast('Kata sandi minimal 6 karakter');
+try{const r=await fetch(base()+'/auth',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e,password:pw.value,register:reg})});const d=await r.json();if(!r.ok)return toast(d.error||'Login gagal');TOK=d.token;try{localStorage.setItem('gexa_tok',TOK);localStorage.setItem('gexa_pro',d.pro?'1':'0')}catch(x){}setUser(e);lo(false);so(false);pw.value='';em.value=''}catch(x){toast('Server tidak dapat dihubungi')}};
+const su=setUser;setUser=v=>{su(v);if(!v){TOK='';try{localStorage.removeItem('gexa_tok');localStorage.removeItem('gexa_pro')}catch(x){}}};
+document.querySelector('.fg').onclick=()=>{const e=em.value.trim().toLowerCase();if(!base())return toast('Reset kata sandi butuh server akun (belum tersambung)');if(!e)return toast('Isi email dulu'),em.focus();
+fetch(base()+'/auth/reset',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email:e})}).then(()=>toast('Jika email terdaftar, tautan reset dikirim')).catch(()=>toast('Server tidak dapat dihubungi'))};
+/* cari web & berpikir mendalam (dikirim ke server) */
+
+/* riwayat dipotong, warna kode, markdown: rumus, gambar, daftar bersarang */
+function trim(h){let n=0,c=0,o=[];for(let i=h.length-1;i>=0;i--){const x=h[i];c+=String(x.content||'').length;if(o.length&&c>40000)break;
+if(x.role==='user'&&++n<=3){const attachments=[];(x.imgs||[]).forEach((data,j)=>attachments.push({kind:'image',name:'Gambar '+(j+1),type:'image/jpeg',encoding:'data-url',data}));(x.docs||[]).forEach(d=>attachments.push({kind:d.kind||'file',name:d.name,type:d.type,encoding:d.encoding||'data-url',data:d.data}));o.unshift({role:'user',content:x.content,...(attachments.length?{attachments}:{})})}
+else o.unshift({role:x.role,content:x.content})}while(o.length>1&&o[0].role!=='user')o.shift();return o}
+const KW='const|let|var|function|return|if|else|elif|for|while|do|switch|case|break|continue|class|new|import|from|export|default|async|await|try|catch|except|finally|throw|raise|typeof|def|in|is|not|and|or|None|True|False|null|undefined|true|false|self|this|public|private|static|void|int|float|string|bool|char|fun|val|struct|enum|interface|extends|implements|package|use|fn|mut|impl|pub|echo|lambda|with|as|yield|pass|SELECT|FROM|WHERE|INSERT|UPDATE|DELETE|CREATE|TABLE|JOIN|ORDER|BY|GROUP|LIMIT|VALUES|INTO';
+const RC={h:/(#[^\n]*)/,s:/(--[^\n]*|\/\*[\s\S]*?\*\/)/,c:/(\/\/[^\n]*|\/\*[\s\S]*?\*\/)/};
+function hl2(g,c){if(!g||/^(html|xml|svg|kode)$/i.test(g))return hl(c);const k=/^(py|python|sh|bash|shell|yaml|yml|rb|ruby|r|toml)$/i.test(g)?'h':/sql/i.test(g)?'s':'c';
+return esc(c).replace(new RegExp(RC[k].source+'|("[^"\\n]*"|\'[^\'\\n]*\'|`[^`]*`)|(\\b\\d+(?:\\.\\d+)?\\b)|(\\b(?:'+KW+')\\b)','g'),(x,a,b,n)=>'<i class="'+(a?'k4':b?'k2':n?'nm':'kw')+'">'+x+'</i>')}
+const GR={alpha:'α',beta:'β',gamma:'γ',delta:'δ',theta:'θ',lambda:'λ',mu:'μ',pi:'π',sigma:'σ',omega:'ω',Delta:'Δ',Sigma:'Σ',Omega:'Ω',times:'×',cdot:'·',div:'÷',pm:'±',le:'≤',leq:'≤',ge:'≥',geq:'≥',ne:'≠',neq:'≠',approx:'≈',infty:'∞',to:'→',rightarrow:'→',leftarrow:'←',sum:'Σ',int:'∫',ldots:'…',partial:'∂',left:'',right:'',quad:' '},SUP='⁰¹²³⁴⁵⁶⁷⁸⁹';
+function tex(t){for(let i=0;i<3;i++)t=t.replace(/\\frac\{([^{}]*)\}\{([^{}]*)\}/g,'($1)/($2)').replace(/\\sqrt\{([^{}]*)\}/g,'√($1)');
+return t.replace(/\\text\{([^{}]*)\}/g,'$1').replace(/\\([a-zA-Z]+)/g,(x,k)=>k in GR?GR[k]:k).replace(/\^\{?(\d+)\}?/g,(x,d)=>[...d].map(c=>SUP[c]).join('')).replace(/_\{?(\d+)\}?/g,(x,d)=>[...d].map(c=>String.fromCharCode(8320+ +c)).join('')).replace(/[{}]/g,'')}
+const md0=md;
+md=s=>{const I=[],ph=h=>'\u0001'+(I.push(h)-1)+'\u0001',inl=t=>md0(t).replace(/^<p>|<\/p>$/g,'');
+s=s.replace(/\$\$([\s\S]+?)\$\$|\\\[([\s\S]+?)\\\]/g,(x,a,b)=>ph('<span class="mthb">'+esc(tex(a||b))+'</span>')).replace(/\\\(([\s\S]+?)\\\)|\$([^$\n]*[\\^_][^$\n]*)\$/g,(x,a,b)=>ph('<span class="mth">'+esc(tex(a||b))+'</span>'));
+s=s.replace(/!\[([^\]]*)\]\((https?:\/\/[^)\s]+)\)/g,(x,a,u)=>ph('<img alt="'+esc(a)+'" src="'+esc(u)+'" style="max-width:100%;border-radius:12px">'));
+const L=s.split('\n'),o=[],LI=/^(\s*)([-*]|\d+\.)\s+(.*)/,op=(t,m)=>t==='ol'?'<ol start="'+parseInt(m)+'">':'<ul>';
+for(let i=0;i<L.length;){if(!LI.test(L[i])){o.push(L[i++]);continue}
+const st=[];let h='';
+while(i<L.length){const m=L[i].match(LI);if(!m){if(!/\S/.test(L[i])&&LI.test(L[i+1]||'')){i++;continue}break}
+const n=m[1].replace(/\t/g,'    ').length,tg=/\d/.test(m[2])?'ol':'ul';
+while(st.length&&n<st[st.length-1].n)h+='</li></'+st.pop().t+'>';
+const tp=st[st.length-1];
+if(!tp||n>tp.n){h+=op(tg,m[2]);st.push({t:tg,n})}else if(tp.t!==tg){h+='</li></'+st.pop().t+'>'+op(tg,m[2]);st.push({t:tg,n})}else h+='</li>';
+h+='<li>'+inl(m[3]);i++}
+while(st.length)h+='</li></'+st.pop().t+'>';o.push(ph(h))}
+let r=md0(o.join('\n')).replace(/<p>\u0001(\d+)\u0001<\/p>/g,'\u0001$1\u0001');for(let k=0;k<3;k++)r=r.replace(/\u0001(\d+)\u0001/g,(x,i)=>I[i]);return r};
+addEventListener('offline',()=>toast('Kamu sedang offline'));
+
+function hideHero(){if(hero.hidden)return;hero.classList.add('out');setTimeout(()=>{hero.classList.remove('out');if(!msgs.hidden)hero.hidden=true},420)}
+
+/* kartu saran, tombol ke bawah, judul chat */
+const SUG=['Buatkan halaman login HTML','Tips belajar bahasa Inggris','Jelaskan cara kerja AI','Bantu tulis email sopan'],sg=document.getElementById('sug'),tb=document.getElementById('tobot');
+sg.innerHTML=SUG.map(x=>'<button>'+x+'</button>').join('');
+sg.onclick=e=>{const b=e.target.closest('button');if(b&&!box.classList.contains('busy'))ask(b.textContent)};
+main.addEventListener('scroll',()=>{tb.hidden=main.scrollHeight-(parseFloat(msgs.style.paddingBottom)||0)-main.scrollTop-main.clientHeight<160});
+tb.onclick=()=>main.scrollTo({top:main.scrollHeight-(parseFloat(msgs.style.paddingBottom)||0),behavior:'smooth'});
+function mkTitle(t){t=t.replace(/\n?\[Lampiran:[^\]]*\]/g,'').replace(/[*_`#>]/g,'').trim().split('\n')[0]||'Chat baru';if(t.length>32){t=t.slice(0,32);t=t.slice(0,Math.max(t.lastIndexOf(' '),12))+'…'}return t[0].toUpperCase()+t.slice(1)}
+
+/* jawaban tidak menggulir otomatis: pesanmu naik ke atas, jawaban muncul di bawahnya */
+const sd=Object.getOwnPropertyDescriptor(Element.prototype,'scrollTop');
+Object.defineProperty(main,'scrollTop',{configurable:true,get(){return sd.get.call(this)},set(v){if(!box.classList.contains('busy'))sd.set.call(this,v)}});
+const ask0=ask;ask=(v,f)=>{ask0(v,f);const me=[...msgs.querySelectorAll('.m.me')].pop();if(!me)return;
+msgs.style.paddingBottom=main.clientHeight+'px';main.scrollTo({top:Math.max(0,me.offsetTop-parseFloat(getComputedStyle(main).paddingTop)-8),behavior:'smooth'})};
+new MutationObserver(()=>{if(box.classList.contains('busy')||msgs.hidden)return;const me=[...msgs.querySelectorAll('.m.me')].pop();if(!me)return;
+const pt=parseFloat(getComputedStyle(main).paddingTop)+8,pad=parseFloat(msgs.style.paddingBottom)||0;msgs.style.paddingBottom=Math.max(0,me.offsetTop-pt+main.clientHeight-(main.scrollHeight-pad))+'px'}).observe(box,{attributes:true,attributeFilter:['class']});
+['new','list'].forEach(id=>document.getElementById(id).addEventListener('click',()=>{msgs.style.paddingBottom=''}));
+
+/* ===== MENU TEKAN LAMA + PROYEK ===== */
+let PJ=[];try{PJ=JSON.parse(localStorage.getItem('gexa_proj')||'[]')}catch(e){}
+const spj=()=>{try{localStorage.setItem('gexa_proj',JSON.stringify(PJ))}catch(e){}};
+let curProj=null,pjv=null;
+const pjName=id=>(PJ.find(x=>x.id===id)||{}).name;
+function pjCtx(){return pjCtx0()+memCtx()}function pjCtx0(){const p=PJ.find(x=>x.id===curProj);return p?'\n\nPROYEK: '+p.name+(p.inst?'\nInstruksi dari pengguna untuk proyek ini: '+p.inst:'')+pjFiles(p):''}
+function pjBadge(){document.querySelector('#psheet .prow small').textContent=pjName(curProj)||'Tidak ada'}
+const oc0=openChat;openChat=c=>{oc0(c);curProj=c.proj||null;pjBadge()};
+document.getElementById('new').addEventListener('click',()=>{curProj=null;pjBadge()});
+const pop=document.createElement('div');pop.className='pw';pop.innerHTML='<div class="pc"></div>';app.appendChild(pop);
+const po=v=>pop.classList.toggle('on',v);pop.onclick=e=>{if(e.target===pop)po(false)};
+const IK={ren:'<path d="M4 20h4L19.5 8.5a2.1 2.1 0 0 0-3-3L5 17z"/><path d="M14.5 7.5l3 3"/>',pin:'<g transform="rotate(40 12 12)"><path d="M9 4h6l-1 5.5 2.5 2.5V14H7.5v-2L10 9.5z"/><path d="M12 14v6"/></g>',prj:'<path d="M8 4h8M6.5 7.3h11M4.5 10.5h15l-1.4 8a2 2 0 0 1-2 1.7H7.9a2 2 0 0 1-2-1.7z"/>',del:'<path d="M4 7h16M9 7V4.5h6V7M6.5 7l1 13h9l1-13M10 11v5M14 11v5"/>'};
+function popup(items,el){const c=pop.firstChild;c.innerHTML=items.map((x,i)=>'<button data-i="'+i+'"'+(x.red?' class="rd"':'')+'>'+(x.ic?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+IK[x.ic]+'</svg>':'')+'<span>'+esc(x.t)+'</span></button>').join('');
+c.onclick=e=>{const b=e.target.closest('button');if(b){po(false);items[b.dataset.i].fn()}};
+po(true);const A=app.getBoundingClientRect(),h=c.offsetHeight,r=el&&el.getBoundingClientRect();let y=r?r.bottom-A.top:(A.height-h)/2;if(y+h>A.height-12)y=Math.max(12,(r?r.top-A.top:A.height)-h);c.style.top=y+'px'}
+function setP(c,id){if(c){c.proj=id;if(cur===c.id)curProj=id}else curProj=id;ps();pjBadge();toast(id?'Ditambahkan ke proyek':'Dikeluarkan dari proyek')}
+function pickProj(c,el){popup(PJ.length?[{t:'Tanpa proyek',fn:()=>setP(c,null)},...PJ.map(p=>({t:p.name,fn:()=>setP(c,p.id)}))]:[{t:'Belum ada proyek, buka menu Proyek',fn:()=>{}}],el)}
+function chatMenu(b){const c=chats.find(x=>x.id===+b.dataset.id);if(!c)return;
+popup([{ic:'ren',t:'Ganti nama',fn:()=>dlg('Ganti nama chat','',{input:c.title,ok:'Simpan'},v=>{c.title=v.trim()||c.title;ps();rl()})},
+{ic:'pin',t:c.pin?'Lepas sematan':'Sematkan',fn:()=>{c.pin=!c.pin;ps();rl()}},
+{ic:'prj',t:'Tambahkan ke proyek',fn:()=>pickProj(c,b)},
+{ic:'del',t:'Hapus',red:1,fn:()=>dlg('Hapus chat','Chat ini akan dihapus permanen dari perangkat ini.',{ok:'Hapus',danger:1},()=>{chats=chats.filter(x=>x!==c);ps();rl();if(cur===c.id)document.getElementById('new').click()})}],b)}
+/* tekan lama pada chat = menu */
+const lp=document.getElementById('list');let lt=null,lx=0,ly=0,lpd=false;const cl=()=>{clearTimeout(lt);lt=null};
+lp.addEventListener('pointerdown',e=>{lpd=false;const b=e.target.closest('.ti');if(!b)return;lx=e.clientX;ly=e.clientY;lt=setTimeout(()=>{lpd=true;chatMenu(b)},450)});
+lp.addEventListener('pointermove',e=>{if(lt&&Math.hypot(e.clientX-lx,e.clientY-ly)>10)cl()});
+['pointerup','pointercancel','pointerleave'].forEach(t=>lp.addEventListener(t,cl));
+lp.addEventListener('click',e=>{if(lpd){lpd=false;e.stopImmediatePropagation();e.preventDefault()}},true);
+lp.addEventListener('click',e=>{const k=e.target.closest('.kb');if(k){e.stopImmediatePropagation();e.preventDefault();chatMenu(k)}},true);
+lp.addEventListener('contextmenu',e=>{const b=e.target.closest('.ti');if(b){e.preventDefault();if(!lpd){lpd=true;cl();chatMenu(b)}}});
+document.querySelector('#psheet .prow').onclick=()=>{pm(false);pickProj(chats.find(x=>x.id===cur)||null,null)};
+/* halaman Proyek */
+const pjs=document.createElement('section');pjs.className='pjs';
+pjs.innerHTML='<div class="pjh"><button class="hb" id="pjb" aria-label="Kembali"><svg viewBox="0 0 24 24" style="width:calc(28*var(--u));height:calc(28*var(--u))"><path d="M20 12H5M11 5l-7 7 7 7" fill="none" stroke="#f1f3f4" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><h1 id="pjt">Proyek</h1></div><div class="pjt"><label class="pjsr"><svg viewBox="0 0 24 24" style="width:calc(26*var(--u));height:calc(26*var(--u));flex:none" fill="none" stroke="#f1f3f4" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5.5 5.5"/></svg><input id="pjq" type="search" placeholder="Cari proyek" aria-label="Cari proyek"></label><div class="chps" id="chps"><button class="chp on" data-f="all">Semua</button><button class="chp" data-f="new">Terbaru</button><button class="chp" data-f="fav">Favorit</button></div></div><div class="pjbody" id="pjbody"></div><button class="fab" id="fab"><svg viewBox="0 0 24 24" style="width:calc(30*var(--u));height:calc(30*var(--u))" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round"><path d="M12 4v16M4 12h16"/></svg>Proyek baru</button>';app.appendChild(pjs);
+const pjo=v=>pjs.classList.toggle('on',v),pjbody=document.getElementById('pjbody');
+function rpj(){const t=document.getElementById('pjt');
+if(!pjv){t.textContent='Proyek';pjs.classList.add('lst');pjList();pjBd();return}
+const p=PJ.find(x=>x.id===pjv);if(!p){pjv=null;return rpj()}t.textContent=p.name;pjs.classList.remove('lst');
+pjbody.innerHTML='<div class="pji"><small>Instruksi</small><p>'+(p.inst?esc(p.inst):'Belum ada instruksi. AI akan mengikutinya di semua chat dalam proyek ini.')+'</p></div><button class="pjn" data-a="chat">+ Chat baru di proyek ini</button>'+pjFilesUi(p)+'<button data-a="inst">Ubah instruksi</button><button data-a="ren">Ganti nama proyek</button><button class="dg" data-a="del">Hapus proyek</button>'+chats.filter(c=>c.proj===p.id).sort((a,b)=>b.ts-a.ts).map(c=>'<button class="pjc" data-oc="'+c.id+'"><b>'+esc(c.title)+'</b></button>').join('')}
+pjbody.onclick=e=>{const b=e.target.closest('button');if(!b)return;const p=PJ.find(x=>x.id===pjv),a=b.dataset.a;
+if(b.dataset.df!==undefined){if(p&&p.files){p.files.splice(+b.dataset.df,1);spj();rpj()}return}if(a==='addf'){pff.click();return}
+if(b.dataset.k){const q=PJ.find(x=>x.id===+b.dataset.k);if(q)pjMenu(q,b);return}
+if(b.dataset.id){pjv=+b.dataset.id;return rpj()}
+if(b.dataset.oc){const c=chats.find(x=>x.id===+b.dataset.oc);if(c){pjo(false);openChat(c)}return}
+if(a==='new')dlg('Proyek baru','Nama proyek',{input:'',ok:'Buat'},v=>{v=v.trim();if(!v)return;PJ.push({id:Date.now(),name:v,inst:''});spj();pjv=PJ[PJ.length-1].id;rpj()});
+else if(a==='chat'){pjo(false);document.getElementById('new').click();curProj=p.id;pjBadge()}
+else if(a==='inst')dlg('Instruksi proyek','Cara AI menjawab di semua chat proyek ini',{input:p.inst,ok:'Simpan'},v=>{p.inst=v.trim();spj();rpj()});
+else if(a==='ren')dlg('Ganti nama proyek','',{input:p.name,ok:'Simpan'},v=>{p.name=v.trim()||p.name;spj();rpj()});
+else if(a==='del')dlg('Hapus proyek','Chat di dalamnya tetap ada, hanya dikeluarkan dari proyek.',{ok:'Hapus',danger:1},()=>{chats.forEach(c=>{if(c.proj===p.id)c.proj=null});ps();PJ=PJ.filter(x=>x!==p);spj();if(curProj===p.id)curProj=null;pjv=null;rpj();pjBadge()})};
+document.getElementById('pjb').onclick=()=>{if(pjv){pjv=null;rpj()}else{pjo(false);openD(true)}};
+document.getElementById('dproj').onclick=()=>{openD(false);pjv=null;rpj();pjo(true)};
+/* daftar proyek: kartu, cari, filter, menu */
+const PC=[['#202327','#e7e9ea'],['#202327','#a7abaf'],['#202327','#71767b']],FOLD='<svg viewBox="0 0 24 24" fill="currentColor" style="width:calc(40*var(--u));height:calc(40*var(--u))"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>';
+let pjf='all',pjq='';
+const pjLast=p=>Math.max(p.id,...chats.filter(c=>c.proj===p.id).map(c=>c.ts||0));
+function ago(t){const m=Math.floor((Date.now()-t)/6e4);if(m<1)return'Baru saja';if(m<60)return m+' menit lalu';const h=Math.floor(m/60);if(h<24)return h+' jam lalu';const d=Math.floor(h/24);return d<2?'Kemarin':d+' hari lalu'}
+function pjBd(){const e=document.getElementById('pjbd');if(e){e.textContent=PJ.length;e.hidden=!PJ.length}}
+function pjList(){const q=pjq.toLowerCase();let a=PJ.map((p,i)=>({p,i,t:pjLast(p)})).filter(x=>x.p.name.toLowerCase().includes(q));
+if(pjf==='fav')a=a.filter(x=>x.p.fav);if(pjf==='new')a=a.filter(x=>Date.now()-x.t<6048e5);a.sort((x,y)=>y.t-x.t);
+pjbody.innerHTML=a.length?a.map(({p,i,t})=>{const c=PC[i%3],n=chats.filter(k=>k.proj===p.id).length;return'<div class="pcd"><button class="pcb" data-id="'+p.id+'"><span class="pci" style="background:'+c[0]+';color:'+c[1]+'">'+FOLD+'</span><span class="pct"><b>'+esc(p.name)+'</b><small>'+n+' obrolan \u2022 '+ago(t)+'</small></span></button><button class="pck" data-k="'+p.id+'" aria-label="Opsi">'+KB+'</button></div>'}).join(''):'<p class="pje">'+(PJ.length?'Tidak ada proyek yang cocok.':'Belum ada proyek. Buat satu untuk mengelompokkan chat dan memberi instruksi khusus.')+'</p>'}
+function pjMenu(q,el){popup([{t:q.fav?'Hapus dari favorit':'Favoritkan',fn:()=>{q.fav=!q.fav;spj();pjList()}},{t:'Ganti nama',fn:()=>dlg('Ganti nama proyek','',{input:q.name,ok:'Simpan'},v=>{q.name=v.trim()||q.name;spj();pjList()})},{t:'Hapus',red:1,fn:()=>dlg('Hapus proyek','Chat di dalamnya tetap ada, hanya dikeluarkan dari proyek.',{ok:'Hapus',danger:1},()=>{chats.forEach(c=>{if(c.proj===q.id)c.proj=null});ps();PJ=PJ.filter(x=>x!==q);spj();if(curProj===q.id)curProj=null;pjList();pjBd();pjBadge()})}],el)}
+document.getElementById('pjq').oninput=e=>{pjq=e.target.value;pjList()};
+document.getElementById('chps').onclick=e=>{const b=e.target.closest('.chp');if(!b)return;pjf=b.dataset.f;document.querySelectorAll('#chps .chp').forEach(x=>x.classList.toggle('on',x===b));pjList()};
+document.getElementById('fab').onclick=()=>dlg('Proyek baru','Nama proyek',{input:'',ok:'Buat'},v=>{v=v.trim();if(!v)return;PJ.push({id:Date.now(),name:v,inst:''});spj();pjv=PJ[PJ.length-1].id;rpj()});
+pjBd();
+/* file proyek, memori, dan muat riwayat */
+function pjFiles(p){let n=6e4,o='';for(const f of p.files||[]){if(n<=0)break;const t=f.text.slice(0,n);n-=t.length;o+='\n### '+f.name+'\n'+t}return o?'\n\nFILE PROYEK (pakai sebagai pengetahuan):'+o:''}
+function pjFilesUi(p){return'<div class="pji"><small>File proyek</small>'+((p.files||[]).map((f,i)=>'<div class="pjf"><span>'+esc(f.name)+'</span><small>'+Math.ceil(f.text.length/1024)+' KB</small><button data-df="'+i+'" aria-label="Hapus file">\u00d7</button></div>').join('')||'<p>Belum ada file. Tambahkan file teks agar AI memakainya di semua chat proyek ini.</p>')+'</div><button data-a="addf">+ Tambah file</button>'}
+const mkIn=(acc,fn)=>{const i=document.createElement('input');i.type='file';i.accept=acc;i.multiple=true;i.hidden=true;document.body.appendChild(i);i.onchange=()=>{fn([...i.files]);i.value=''};return i};
+const pff=mkIn('.txt,.md,.csv,.json,.html,.css,.js,.ts,.py,.java,.c,.cpp,.xml,.yml,.yaml,.log,text/*',fs=>{const p=PJ.find(x=>x.id===pjv);if(!p)return;p.files=p.files||[];fs.forEach(f=>{if(f.size>3e5)return toast(f.name+' lebih dari 300 KB');const r=new FileReader();r.onload=()=>{const t=String(r.result);if(t.indexOf('\u0000')>=0)return toast(f.name+' bukan file teks');if(p.files.reduce((a,x)=>a+x.text.length,0)+t.length>9e5)return toast('Batas file proyek 900 KB tercapai');p.files.push({name:f.name,text:t});spj();rpj()};r.readAsText(f)})});
+const memA=()=>{try{return JSON.parse(localStorage.getItem('gexa_mem')||'[]')}catch(e){return[]}},memSet=a=>{try{localStorage.setItem('gexa_mem',JSON.stringify(a.slice(-50)))}catch(e){}};
+function memAdd(t){const s=t.trim().slice(0,300);if(!s)return;const a=memA().filter(x=>x!==s);memSet([...a,s].slice(-50))}
+function memCtx(){const a=memA();return a.length?'\n\nMEMORI PENGGUNA (catatan terbaru yang disimpan otomatis; gunakan bila relevan):\n'+a.slice(-50).map(x=>'- '+x).join('\n').slice(-4000):''}
+kvGet('chats').then(a=>{if(a&&a.length)chats=a;else if(chats.length)ps();rl()});
+addEventListener('pagehide',()=>{clearTimeout(pst);IDB.then(d=>d&&kvSet('chats',chats))});
+const bt1=backTop;backTop=()=>pop.classList.contains('on')?po(false):pjs.classList.contains('on')?document.getElementById('pjb').click():bt1();window.onBackPressed=backTop;
+
+/* ===== Chat Privat ===== */
+let priv=false;
+const pvb=document.getElementById('priv'),hH=hero.querySelector('h2'),hP=hero.querySelector('p'),hH0=hH.textContent,hP0=hP.textContent;
+function setPriv(v){priv=v;pvb.classList.toggle('on',v);pvb.setAttribute('aria-pressed',v);hH.textContent=v?'Chat Privat':hH0;hP.textContent=v?'Chat ini tidak disimpan di riwayat.':hP0}
+pvb.onclick=()=>{setPriv(!priv);toast(priv?'Chat privat aktif':'Chat privat nonaktif')};
+document.getElementById('new').addEventListener('click',()=>setPriv(false));
+const ocPriv=openChat;openChat=function(c){setPriv(false);return ocPriv(c)};
+new MutationObserver(()=>app.classList.toggle('started',!msgs.hidden)).observe(msgs,{attributes:true,attributeFilter:['hidden']});
+app.classList.toggle('started',!msgs.hidden);
+</script>
+</body>
+</html>
